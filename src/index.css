@@ -1,0 +1,95 @@
+:root {
+  --black: #09090b;
+  --zinc-950: #0f0f12;
+  --zinc-900: #18181b;
+  --zinc-800: #27272a;
+  --zinc-600: #52525b;
+  --zinc-400: #a1a1aa;
+  --zinc-200: #e4e4e7;
+  --zinc-100: #f4f4f5;
+  --white: #ffffff;
+  --red: #e10600;
+  --red-hover: #c00500;
+  --red-soft: rgba(225, 6, 0, 0.12);
+  --green: #22c55e;
+
+  /* Light-section defaults; .dark overrides these */
+  --bg: var(--white);
+  --surface: var(--zinc-100);
+  --text: var(--black);
+  --mute: var(--zinc-600);
+  --line: var(--zinc-200);
+  --line-strong: #d4d4d8;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bengali: "Noto Sans Bengali", "Inter", sans-serif;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: var(--black);
+  --surface: var(--zinc-900);
+  --text: #fafafa;
+  --mute: var(--zinc-400);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--black);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
