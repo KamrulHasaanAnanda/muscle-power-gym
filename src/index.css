@@ -1,40 +1,36 @@
 :root {
-  --black: #09090b;
-  --zinc-950: #0f0f12;
-  --zinc-900: #18181b;
-  --zinc-800: #27272a;
-  --zinc-600: #52525b;
-  --zinc-400: #a1a1aa;
-  --zinc-200: #e4e4e7;
-  --zinc-100: #f4f4f5;
+  --ink: #15120f;
+  --ink-2: #1e1a16;
+  --ink-3: #2b2621;
+  --paper: #ffffff;
+  --paper-2: #f4f4f4;
+  --cream: #f3ede1;
   --white: #ffffff;
-  --red: #e10600;
-  --red-hover: #c00500;
-  --red-soft: rgba(225, 6, 0, 0.12);
+  --red: #b5121b;
+  --red-dark: #8e0e15;
+  --red-bright: #e0262e;
   --green: #22c55e;
 
-  /* Light-section defaults; .dark overrides these */
-  --bg: var(--white);
-  --surface: var(--zinc-100);
-  --text: var(--black);
-  --mute: var(--zinc-600);
-  --line: var(--zinc-200);
-  --line-strong: #d4d4d8;
+  /* Section defaults; .ink / .red override these */
+  --bg: var(--paper);
+  --text: var(--ink);
+  --mute: #5e564b;
+  --line: rgba(21, 18, 15, 0.18);
+  --line-strong: var(--ink);
 
-  --radius: 16px;
-  --radius-sm: 10px;
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --bengali: "Noto Sans Bengali", "Inter", sans-serif;
+  --serif: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --label: "Barlow", system-ui, sans-serif;
+  --font: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bengali: "Noto Sans Bengali", "Barlow", sans-serif;
   color-scheme: light;
 }
 
-.dark {
-  --bg: var(--black);
-  --surface: var(--zinc-900);
-  --text: #fafafa;
-  --mute: var(--zinc-400);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
+.ink {
+  --bg: var(--ink);
+  --text: var(--cream);
+  --mute: #a99f90;
+  --line: rgba(243, 237, 225, 0.14);
+  --line-strong: rgba(243, 237, 225, 0.6);
   color-scheme: dark;
 }
 
@@ -46,17 +42,16 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
   margin: 0;
   color: var(--text);
-  background: var(--black);
+  background: var(--ink);
   font-family: var(--font);
-  font-size: 1rem;
+  font-size: 1.0625rem;
   line-height: 1.6;
-  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
 }
 
@@ -76,8 +71,16 @@ a {
   color: inherit;
 }
 
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
 :focus-visible {
-  outline: 2px solid var(--red);
+  outline: 3px solid var(--red);
   outline-offset: 3px;
 }
 
