@@ -23,9 +23,7 @@ export default function Rules() {
             Rules
           </p>
           <h1 className="display">
-            How we keep
-            <br />
-            the <span>floor fair.</span>
+            The house <span>rules.</span>
           </h1>
           <p className="lead">
             These rules apply to every member. They cover the timetable,
@@ -34,9 +32,10 @@ export default function Rules() {
         </div>
       </section>
 
-      <section className="section paper">
+      <section className="section ink rules-section">
         <div className="container rules">
           <nav className="rules-index" aria-label="Rule sections">
+            <p className="rules-index-title">Contents</p>
             {ruleGroups.map((group, i) => (
               <a key={group.title} href={`#${slug(group.title)}`}>
                 <span>{roman[i]}</span>
@@ -47,10 +46,15 @@ export default function Rules() {
           <div className="rules-body">
             {ruleGroups.map((group, i) => (
               <article key={group.title} id={slug(group.title)} className="rule-group">
-                <h2>
-                  <span>{roman[i]}</span>
-                  {group.title}
-                </h2>
+                <header className="rule-head">
+                  <span className="rule-num" aria-hidden="true">
+                    {roman[i]}
+                  </span>
+                  <div>
+                    <p className="rule-article">Article {roman[i]}</p>
+                    <h2>{group.title}</h2>
+                  </div>
+                </header>
                 <ol>
                   {group.items.map((item) => (
                     <li key={item}>{item}</li>
@@ -58,15 +62,16 @@ export default function Rules() {
                 </ol>
               </article>
             ))}
-            <p className="rules-sign">
-              Thank you for your cooperation.
-              <span>
+            <div className="rules-sign">
+              <p className="rules-thanks">Thank you for your cooperation.</p>
+              <p className="rules-signature">Muscle Power Gym</p>
+              <strong>Management</strong>
+              <p className="rules-phones">
                 <a href={`tel:${PHONE_TEL}`}>{PHONE}</a>
-                {' · '}
+                <i aria-hidden="true">✦</i>
                 <a href={`tel:${PHONE_2_TEL}`}>{PHONE_2}</a>
-              </span>
-              <strong>Muscle Power Gym Management</strong>
-            </p>
+              </p>
+            </div>
             <Link className="next-link" to="/dress-code">
               <span>Next</span>
               See the dress code

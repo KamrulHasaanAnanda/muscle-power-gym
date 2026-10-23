@@ -18,10 +18,10 @@
   --line: rgba(21, 18, 15, 0.18);
   --line-strong: var(--ink);
 
-  --serif: "DM Serif Display", Georgia, "Times New Roman", serif;
-  --label: "Barlow", system-ui, sans-serif;
-  --font: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --bengali: "Noto Sans Bengali", "Barlow", sans-serif;
+  --heading: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --label: "Inter", system-ui, sans-serif;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bengali: "Noto Sans Bengali", "Inter", sans-serif;
   color-scheme: light;
 }
 
