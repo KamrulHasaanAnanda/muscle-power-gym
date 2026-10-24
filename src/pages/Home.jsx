@@ -469,15 +469,6 @@ export default function Home() {
                   <ArrowIcon />
                 </a>
               </div>
-              <a
-                className="btn btn-lg btn-block btn-ghost"
-                href={WHATSAPP}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <ChatIcon />
-                Chat on WhatsApp
-              </a>
               <ul className="contact-links">
                 <li>
                   <a href={MAPS} target="_blank" rel="noreferrer">
@@ -521,7 +512,13 @@ export default function Home() {
                   <a href={`tel:${PHONE_TEL}`}>{PHONE}</a>.
                 </p>
               ) : (
-                <p className="form-note">Opens WhatsApp with your message filled in.</p>
+                <p className="form-note">
+                  Opens WhatsApp with your message filled in, or{' '}
+                  <a href={WHATSAPP} target="_blank" rel="noreferrer">
+                    chat directly
+                  </a>
+                  .
+                </p>
               )}
             </form>
           </div>
