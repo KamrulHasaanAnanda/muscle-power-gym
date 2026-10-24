@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowIcon,
@@ -25,6 +25,15 @@ import {
 } from '../site.jsx'
 
 const roman = ['I', 'II', 'III', 'IV', 'V', 'VI']
+
+// Banner slideshow: each photo shows for 6s, crossfading on a 30s loop (see .hero-bg in App.css)
+const heroSlides = [
+  '/images/gym-3.jpg',
+  '/images/equip-chest.jpg',
+  '/images/hero-group.jpg',
+  '/images/floor-treadmill.jpg',
+  '/images/equip-rack.jpg',
+]
 
 const gallery = [
   {
@@ -57,12 +66,16 @@ const gallery = [
     src: '/images/equip-rack.jpg',
     alt: 'Power racks loaded with barbells and weight plates',
     cap: 'Power racks',
-    size: 'gallery-wide',
   },
   {
     src: '/images/cardio-bikes.jpg',
     alt: 'Members riding yellow and black spin bikes',
     cap: 'Spin bikes',
+  },
+  {
+    src: '/images/gym-4.jpg',
+    alt: 'Benches, machines, and a row of treadmills on red and blue floor mats',
+    cap: 'Free weights & cardio',
     size: 'gallery-wide',
   },
 ]
@@ -70,6 +83,26 @@ const gallery = [
 export default function Home() {
   const [sent, setSent] = useState(false)
   const { today, open, ladies } = useGymStatus()
+  const heroRef = useRef(null)
+  const contactRef = useRef(null)
+  const [heroVisible, setHeroVisible] = useState(true)
+  const [contactVisible, setContactVisible] = useState(false)
+  const barHidden = heroVisible || contactVisible
+
+  // Phone action bar: show once the hero's buttons scroll away, hide again from the contact section down
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === heroRef.current) setHeroVisible(entry.isIntersecting)
+        if (entry.target === contactRef.current) {
+          setContactVisible(entry.isIntersecting || entry.boundingClientRect.top < 0)
+        }
+      }
+    }, { rootMargin: '-80px 0px 0px 0px' })
+    observer.observe(heroRef.current)
+    observer.observe(contactRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   function sendWhatsApp(event) {
     event.preventDefault()
@@ -94,12 +127,20 @@ export default function Home() {
 
   return (
     <main id="top">
-      <section className="hero">
-        <img
-          className="hero-bg"
-          src="/images/gym-3.jpg"
-          alt="Night view of the Halishahar building with the red Muscle Power Gym sign on the top floor"
-        />
+      <section className="hero" ref={heroRef}>
+        <div className="hero-slides" aria-hidden="true">
+          {heroSlides.map((src, i) => (
+            <img
+              key={src}
+              className="hero-bg"
+              src={src}
+              alt=""
+              fetchPriority={i === 0 ? 'high' : 'low'}
+              decoding="async"
+              style={{ animationDelay: `${i * 6}s` }}
+            />
+          ))}
+        </div>
         <div className="hero-shade" />
         <div className="container hero-content">
           <div className="hero-meta">
@@ -153,8 +194,7 @@ export default function Home() {
         </div>
       </section>
 
-
-      <section className="section paper" id="facilities">
+      <section className="section ink" id="facilities">
         <div className="container">
           <header className="head">
             <p className="kicker">No. I · Facilities</p>
@@ -165,60 +205,24 @@ export default function Home() {
             </h2>
           </header>
 
-          <div className="facilities">
-            <figure className="photo photo-tall">
-              <img
-                src="/images/gym-google-1.jpg"
-                alt="Training floor with wood flooring, mirrors, plate-loaded machines, and blue ceiling lights"
-                loading="lazy"
-              />
-            </figure>
-            <div className="facilities-side">
-              <figure className="photo photo-wide">
-                <img
-                  src="/images/gym-4.jpg"
-                  alt="Benches, machines, and a row of treadmills on red and blue floor mats"
-                  loading="lazy"
-                />
-              </figure>
-              <p className="lead">
-                A working gym, not a showroom. Built for serious lifters,
-                complete beginners, and everyone in between.
-              </p>
-              <ul className="features">
-                {features.map((f) => (
-                  <li key={f.title}>
-                    <span className="feature-icon">
-                      <Icon>{f.icon}</Icon>
-                    </span>
-                    <div>
-                      <h3>{f.title}</h3>
-                      <p>{f.text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+          <p className="facilities-lead">
+            A working gym, not a showroom. Built for serious lifters, complete
+            beginners, and everyone in between.
+          </p>
+          <ul className="features">
+            {features.map((f) => (
+              <li key={f.title}>
+                <span className="feature-icon">
+                  <Icon>{f.icon}</Icon>
+                </span>
+                <div>
+                  <h3>{f.title}</h3>
+                  <p>{f.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
 
-      <section className="section ink" id="gallery">
-        <div className="container">
-          <header className="head">
-            <div>
-              <p className="kicker">No. II · Inside the gym</p>
-              <h2 className="display">
-                Real iron.
-                <br />
-                <span>Real sweat.</span>
-              </h2>
-            </div>
-            <p className="lead">
-              Plate-loaded machines, power racks, cardio, and plenty of room to
-              move. This is what you train on.
-            </p>
-          </header>
           <div className="gallery">
             {gallery.map((g) => (
               <figure key={g.src} className={`photo ${g.size || ''}`}>
@@ -234,7 +238,7 @@ export default function Home() {
         <div className="container">
           <header className="head">
             <div>
-              <p className="kicker">No. III · Community</p>
+              <p className="kicker">No. II · Community</p>
               <h2 className="display">
                 More than a gym.
                 <br />
@@ -282,95 +286,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section ink" id="join">
-        <div className="container">
-          <header className="head">
-            <div>
-              <p className="kicker">No. IV · How to join</p>
-              <h2 className="display">
-                Three steps to
-                <br />
-                your first session.
-              </h2>
-            </div>
-            <p className="lead">
-              No complicated sign-up. Talk to us, see the gym, and start
-              training the same day.
-            </p>
-          </header>
-          <ol className="steps">
-            {steps.map((s, i) => (
-              <li key={s.title}>
-                <span className="step-num">{roman[i]}</span>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="section paper" id="guides">
-        <div className="container">
-          <header className="head">
-            <p className="kicker">No. V · Before you train</p>
-            <h2 className="display">Read this before you come in.</h2>
-          </header>
-          <div className="guides">
-            <Link className="guide" to="/dress-code">
-              <span className="guide-num">A</span>
-              <div>
-                <h3>Dress code</h3>
-                <p>
-                  Two T-shirts, trousers or shorts, a towel, clean soft-soled
-                  sneakers, a water bottle, and body spray.
-                </p>
-                <p className="bn">ড্রেস কোড ও প্রয়োজনীয় সামগ্রী</p>
-              </div>
-              <span className="guide-arrow">
-                <ArrowIcon />
-              </span>
-            </Link>
-            <Link className="guide" to="/rules">
-              <span className="guide-num">B</span>
-              <div>
-                <h3>Rules & regulations</h3>
-                <p>
-                  Hours, equipment, lockers, fees, conduct, and who may come in
-                  with you.
-                </p>
-              </div>
-              <span className="guide-arrow">
-                <ArrowIcon />
-              </span>
-            </Link>
-            <Link className="guide" to="/workout-chart">
-              <span className="guide-icons" aria-hidden="true">
-                <span className="feature-icon">
-                  <MaleIcon />
-                </span>
-                <span className="feature-icon">
-                  <FemaleIcon />
-                </span>
-              </span>
-              <div>
-                <h3>Workout chart</h3>
-                <p>Separate Saturday-to-Thursday boards for male and female members.</p>
-                <p className="bn">পুরুষ ও মহিলা ওয়ার্কআউট চার্ট</p>
-              </div>
-              <span className="guide-arrow">
-                <ArrowIcon />
-              </span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       <section className="section ink" id="hours">
         <div className="container">
           <header className="head">
             <div>
-              <p className="kicker">No. VI · Hours & location</p>
+              <p className="kicker">No. III · Hours & location</p>
               <h2 className="display">Open six days a week.</h2>
             </div>
             <Status open={open} ladies={ladies} />
@@ -434,10 +354,94 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section paper" id="contact">
+      <section className="section paper" id="join">
         <div className="container">
           <header className="head">
-            <p className="kicker">No. VII · Membership</p>
+            <div>
+              <p className="kicker">No. IV · How to join</p>
+              <h2 className="display">
+                Three steps to
+                <br />
+                your first session.
+              </h2>
+            </div>
+            <p className="lead">
+              No complicated sign-up. Talk to us, see the gym, and start
+              training the same day.
+            </p>
+          </header>
+          <ol className="steps">
+            {steps.map((s, i) => (
+              <li key={s.title}>
+                <span className="step-num">{roman[i]}</span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="section ink" id="guides">
+        <div className="container">
+          <header className="head">
+            <p className="kicker">No. V · Before you train</p>
+            <h2 className="display">Read this before you come in.</h2>
+          </header>
+          <div className="guides">
+            <Link className="guide" to="/dress-code">
+              <span className="guide-num">A</span>
+              <div>
+                <h3>Dress code</h3>
+                <p>
+                  Two T-shirts, trousers or shorts, a towel, clean soft-soled
+                  sneakers, a water bottle, and body spray.
+                </p>
+                <p className="bn">ড্রেস কোড ও প্রয়োজনীয় সামগ্রী</p>
+              </div>
+              <span className="guide-arrow">
+                <ArrowIcon />
+              </span>
+            </Link>
+            <Link className="guide" to="/rules">
+              <span className="guide-num">B</span>
+              <div>
+                <h3>Rules & regulations</h3>
+                <p>
+                  Hours, equipment, lockers, fees, conduct, and who may come in
+                  with you.
+                </p>
+              </div>
+              <span className="guide-arrow">
+                <ArrowIcon />
+              </span>
+            </Link>
+            <Link className="guide" to="/workout-chart">
+              <span className="guide-icons" aria-hidden="true">
+                <span className="feature-icon">
+                  <MaleIcon />
+                </span>
+                <span className="feature-icon">
+                  <FemaleIcon />
+                </span>
+              </span>
+              <div>
+                <h3>Workout chart</h3>
+                <p>Separate Saturday-to-Thursday boards for male and female members.</p>
+                <p className="bn">পুরুষ ও মহিলা ওয়ার্কআউট চার্ট</p>
+              </div>
+              <span className="guide-arrow">
+                <ArrowIcon />
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section paper" id="contact" ref={contactRef}>
+        <div className="container">
+          <header className="head">
+            <p className="kicker">No. VI · Membership</p>
             <h2 className="display">
               Ready to start?
               <br />
@@ -505,7 +509,7 @@ export default function Home() {
               </div>
               <label>
                 <span>Message</span>
-                <textarea name="note" rows="4" placeholder="Fees, trial day, ladies’ hours…" />
+                <textarea name="note" rows="3" placeholder="Fees, trial day, ladies’ hours…" />
               </label>
               <button className="btn btn-lg btn-block" type="submit">
                 <ChatIcon />
@@ -523,6 +527,23 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <div className={`quick-bar${barHidden ? '' : ' is-shown'}`} aria-hidden={barHidden}>
+        <a className="btn" href={`tel:${PHONE_TEL}`} tabIndex={barHidden ? -1 : 0}>
+          <PhoneIcon />
+          Call
+        </a>
+        <a
+          className="btn btn-ghost"
+          href={WHATSAPP}
+          target="_blank"
+          rel="noreferrer"
+          tabIndex={barHidden ? -1 : 0}
+        >
+          <ChatIcon />
+          WhatsApp
+        </a>
+      </div>
     </main>
   )
 }

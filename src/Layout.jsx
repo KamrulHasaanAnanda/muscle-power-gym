@@ -65,6 +65,9 @@ export default function Layout() {
             <Link to="/#facilities" onClick={closeMenu}>
               Facilities
             </Link>
+            <Link to="/#hours" onClick={closeMenu}>
+              Hours
+            </Link>
             <Link to="/#join" onClick={closeMenu}>
               Join
             </Link>
@@ -74,9 +77,6 @@ export default function Layout() {
             <NavLink to="/rules" onClick={closeMenu}>
               Rules
             </NavLink>
-            <Link to="/#hours" onClick={closeMenu}>
-              Hours
-            </Link>
             <Link to="/#contact" onClick={closeMenu}>
               Contact
             </Link>
