@@ -74,15 +74,6 @@ export default function Layout() {
             <NavLink to="/rules" onClick={closeMenu}>
               Rules
             </NavLink>
-            <NavLink to="/workout-chart" onClick={closeMenu}>
-              Chart
-            </NavLink>
-            <NavLink to="/weight-loss" onClick={closeMenu}>
-              Weight loss
-            </NavLink>
-            <NavLink to="/weight-gain" onClick={closeMenu}>
-              Weight gain
-            </NavLink>
             <Link to="/#hours" onClick={closeMenu}>
               Hours
             </Link>
