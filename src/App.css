@@ -650,7 +650,7 @@
   line-height: 1.35;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .hero-bar-inner {
     grid-template-columns: 1fr 1fr;
   }
@@ -791,7 +791,7 @@
   gap: 0 2.5rem;
 }
 
-@media (min-width: 760px) {
+@media (min-width: 980px) {
   #facilities .features {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -859,7 +859,7 @@
   display: none;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1024px) {
   .quick-bar {
     position: fixed;
     inset: auto 0 0;
@@ -877,6 +877,13 @@
 
   .quick-bar.is-shown {
     transform: none;
+  }
+
+  @media (min-width: 600px) {
+    .quick-bar {
+      grid-template-columns: repeat(2, minmax(0, 15rem));
+      justify-content: center;
+    }
   }
 
   .quick-bar .btn-ghost {
@@ -1214,7 +1221,7 @@
 .day-name em {
   font-family: var(--label);
   font-style: normal;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2244,7 +2251,7 @@
     margin-bottom: 0.3rem;
     color: var(--red-bright);
     font-family: var(--label);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -3135,7 +3142,7 @@ article.paper {
 .meal-time small {
   margin-left: 0.25rem;
   font-family: var(--font);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--mute);
@@ -3149,7 +3156,7 @@ article.paper {
 .meal-label small {
   display: block;
   margin-bottom: 0.1rem;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -3366,3 +3373,21 @@ article.paper {
   color: var(--red-bright);
 }
 
+/* ---------- Touch screens: bigger hit areas for small text links ---------- */
+
+@media (pointer: coarse) {
+  .foot-grid a,
+  .foot-links a,
+  .crumbs a,
+  .rules-phones a,
+  .contact-links a,
+  .form-note a {
+    display: inline-block;
+    padding-block: 0.6rem;
+    margin-block: -0.6rem;
+  }
+
+  .add-row {
+    padding-block: 0.8rem;
+  }
+}

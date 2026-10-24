@@ -89,7 +89,7 @@ export default function Home() {
   const [contactVisible, setContactVisible] = useState(false)
   const barHidden = heroVisible || contactVisible
 
-  // Phone action bar: show once the hero's buttons scroll away, hide again from the contact section down
+  // Phone/tablet action bar: show once the hero's buttons scroll away, hide again from the contact section down
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
