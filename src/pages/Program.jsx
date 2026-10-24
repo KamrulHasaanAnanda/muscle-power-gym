@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { formatDate, loadPdfKit, makePlanPdf, planFileName } from '../pdf.js'
-import { Icon, programs } from '../site.jsx'
+import { formatPhone, Icon, programs } from '../site.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -15,17 +15,6 @@ function toWhatsApp(raw) {
 }
 
 const isBangladeshMobile = (raw) => /^8801\d{9}$/.test(toWhatsApp(raw))
-
-// Tidy whatever is typed or pasted (+880 1712 345678, 8801712345678,
-// 1712345678…) into the local 01712-345678 form
-function formatPhone(raw) {
-  let d = raw.replace(/\D/g, '')
-  if (d.startsWith('00')) d = d.slice(2)
-  if (d.startsWith('880')) d = d.slice(2)
-  if (/^1\d{9}$/.test(d)) d = `0${d}`
-  d = d.slice(0, 11)
-  return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d
-}
 
 // Weight like 82 or 82.5
 function formatWeight(raw) {

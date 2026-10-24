@@ -3674,3 +3674,25 @@ button {
     width: 1.1rem;
   }
 }
+
+/* ---------- No background logo marks: keep text and photos clean ---------- */
+
+.head::before,
+.features li::before,
+.steps li::before,
+.guide::before,
+.kit li::before,
+.rule-group::before,
+.notice::before,
+.visit-info::before,
+.hero-content::before,
+.page-hero .container::before,
+.chart-board::before,
+.rules-sign::before {
+  content: none;
+}
+
+::selection {
+  background: var(--red);
+  color: var(--white);
+}

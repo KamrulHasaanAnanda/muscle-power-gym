@@ -20,6 +20,7 @@ import {
   Status,
   WHATSAPP,
   features,
+  formatPhone,
   hours,
   steps,
   useGymStatus,
@@ -595,7 +596,17 @@ export default function Home() {
                 </label>
                 <label>
                   <span>Phone</span>
-                  <input name="phone" type="tel" autoComplete="tel" placeholder="01XXX-XXXXXX" required />
+                  <input
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="01XXX-XXXXXX"
+                    pattern="01[3-9][0-9]{2}-[0-9]{6}"
+                    title="A Bangladeshi mobile number, like 01712-345678"
+                    onChange={(event) => (event.target.value = formatPhone(event.target.value))}
+                    required
+                  />
                 </label>
               </div>
               <label>

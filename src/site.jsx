@@ -422,3 +422,14 @@ export const programs = {
     next: 'weight-gain',
   },
 }
+
+// Tidy whatever is typed or pasted (+880 1712 345678, 8801712345678,
+// 1712345678…) into the local 01712-345678 form
+export function formatPhone(raw) {
+  let d = raw.replace(/\D/g, '')
+  if (d.startsWith('00')) d = d.slice(2)
+  if (d.startsWith('880')) d = d.slice(2)
+  if (/^1\d{9}$/.test(d)) d = `0${d}`
+  d = d.slice(0, 11)
+  return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d
+}
