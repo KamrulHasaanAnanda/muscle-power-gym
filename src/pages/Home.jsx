@@ -279,8 +279,8 @@ export default function Home() {
           <header className="head">
             <p className="kicker">No. I · Facilities</p>
             <h2 className="display">
-              Everything you need
-              <br />
+              Everything you need{' '}
+              <br className="wide-only" />
               to train hard.
             </h2>
           </header>
@@ -450,8 +450,8 @@ export default function Home() {
             <div>
               <p className="kicker">No. IV · How to join</p>
               <h2 className="display">
-                Three steps to
-                <br />
+                Three steps to{' '}
+                <br className="wide-only" />
                 your first session.
               </h2>
             </div>
@@ -469,6 +469,16 @@ export default function Home() {
               </li>
             ))}
           </ol>
+          <div className="join-cta">
+            <a className="btn btn-lg" href={`tel:${PHONE_TEL}`}>
+              <PhoneIcon />
+              Call {PHONE}
+            </a>
+            <a className="btn btn-lg btn-ghost" href={WHATSAPP} target="_blank" rel="noreferrer">
+              <ChatIcon />
+              WhatsApp us
+            </a>
+          </div>
         </div>
       </section>
 
