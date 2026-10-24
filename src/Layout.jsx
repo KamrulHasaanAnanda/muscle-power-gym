@@ -45,43 +45,6 @@ export default function Layout() {
     window.scrollTo(0, 0)
   }, [location.pathname, location.hash])
 
-  // Fade content up as it scrolls into view; siblings stagger slightly
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const targets = document.querySelectorAll(
-      'main .section .head, main .facilities-lead, main .features li, main .gallery .photo, main .community .photo, main .steps li, main .guide, main .visit-info, main .visit-map, main .contact, main .chart-board, main .rule-group, main .kit li',
-    )
-    const pending = new Set(targets)
-    let frame = 0
-    // Reveal anything that has reached or scrolled past the lower edge, so a fast flick can't skip items
-    const check = () => {
-      frame = 0
-      const limit = window.innerHeight * 0.92
-      for (const el of pending) {
-        if (el.getBoundingClientRect().top < limit) {
-          el.classList.add('is-in')
-          pending.delete(el)
-        }
-      }
-    }
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(check)
-    }
-    targets.forEach((el) => {
-      const index = [...el.parentElement.children].indexOf(el)
-      el.style.setProperty('--reveal-delay', `${(index % 4) * 0.08}s`)
-      el.classList.add('reveal')
-    })
-    check()
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
-    }
-  }, [location.pathname])
-
   // Home page: underline the nav link for the section in the middle of the screen
   useEffect(() => {
     setActiveSection(null)
