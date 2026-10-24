@@ -26,6 +26,47 @@ import {
 
 const roman = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
+const gallery = [
+  {
+    src: '/images/equip-chest.jpg',
+    alt: 'Members training on red plate-loaded chest press machines',
+    cap: 'Plate-loaded machines',
+    size: 'gallery-big',
+  },
+  {
+    src: '/images/equip-squat.jpg',
+    alt: 'Red plate-loaded squat machine by the yellow wall',
+    cap: 'Squat machine',
+  },
+  {
+    src: '/images/equip-preacher.jpg',
+    alt: 'Red and black preacher curl bench with an EZ bar',
+    cap: 'Preacher curl',
+  },
+  {
+    src: '/images/equip-machines.jpg',
+    alt: 'Member using a pulldown machine beside a row of strength machines',
+    cap: 'Strength floor',
+  },
+  {
+    src: '/images/floor-treadmill.jpg',
+    alt: 'Members walking on a row of treadmills under pendant lights',
+    cap: 'Treadmills',
+  },
+  {
+    src: '/images/equip-rack.jpg',
+    alt: 'Power racks loaded with barbells and weight plates',
+    cap: 'Power racks',
+    size: 'gallery-wide',
+  },
+  {
+    src: '/images/cardio-bikes.jpg',
+    alt: 'Members riding yellow and black spin bikes',
+    cap: 'Spin bikes',
+    size: 'gallery-wide',
+  },
+]
+
 export default function Home() {
   const [sent, setSent] = useState(false)
   const { today, open, ladies } = useGymStatus()
@@ -162,11 +203,90 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section ink" id="gallery">
+        <div className="container">
+          <header className="head">
+            <div>
+              <p className="kicker">No. II · Inside the gym</p>
+              <h2 className="display">
+                Real iron.
+                <br />
+                <span>Real sweat.</span>
+              </h2>
+            </div>
+            <p className="lead">
+              Plate-loaded machines, power racks, cardio, and plenty of room to
+              move. This is what you train on.
+            </p>
+          </header>
+          <div className="gallery">
+            {gallery.map((g) => (
+              <figure key={g.src} className={`photo ${g.size || ''}`}>
+                <img src={g.src} alt={g.alt} loading="lazy" />
+                <figcaption className="photo-cap">{g.cap}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section paper" id="community">
+        <div className="container">
+          <header className="head">
+            <div>
+              <p className="kicker">No. III · Community</p>
+              <h2 className="display">
+                More than a gym.
+                <br />
+                <span>A family.</span>
+              </h2>
+            </div>
+            <p className="lead">
+              Members who train together, celebrate together, and push each
+              other further.
+            </p>
+          </header>
+          <div className="community">
+            <figure className="photo community-star">
+              <img
+                src="/images/athlete-tarek.jpg"
+                alt="Poster congratulating Tarek Mohiuddin on gold medals at IFBB Pro League Thailand 2026 and 6th runner-up at Mr. Universe Thailand 2026"
+                loading="lazy"
+              />
+            </figure>
+            <figure className="photo community-wide">
+              <img
+                src="/images/community-group.jpg"
+                alt="Large group of male members posing together on the gym floor"
+                loading="lazy"
+              />
+              <figcaption className="photo-cap">Our members</figcaption>
+            </figure>
+            <figure className="photo">
+              <img
+                src="/images/ladies-event.jpg"
+                alt="Female members in saris and salwar kameez gathered for an event at the gym"
+                loading="lazy"
+              />
+              <figcaption className="photo-cap">Ladies’ get-together</figcaption>
+            </figure>
+            <figure className="photo community-cheer">
+              <img
+                src="/images/community-celebration.jpg"
+                alt="Members crowding around an athlete holding a prize cheque on the gym floor"
+                loading="lazy"
+              />
+              <figcaption className="photo-cap">Celebrating a win</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
       <section className="section ink" id="join">
         <div className="container">
           <header className="head">
             <div>
-              <p className="kicker">No. II · How to join</p>
+              <p className="kicker">No. IV · How to join</p>
               <h2 className="display">
                 Three steps to
                 <br />
@@ -193,7 +313,7 @@ export default function Home() {
       <section className="section paper" id="guides">
         <div className="container">
           <header className="head">
-            <p className="kicker">No. III · Before you train</p>
+            <p className="kicker">No. V · Before you train</p>
             <h2 className="display">Read this before you come in.</h2>
           </header>
           <div className="guides">
@@ -250,7 +370,7 @@ export default function Home() {
         <div className="container">
           <header className="head">
             <div>
-              <p className="kicker">No. IV · Hours & location</p>
+              <p className="kicker">No. VI · Hours & location</p>
               <h2 className="display">Open six days a week.</h2>
             </div>
             <Status open={open} ladies={ladies} />
@@ -317,7 +437,7 @@ export default function Home() {
       <section className="section paper" id="contact">
         <div className="container">
           <header className="head">
-            <p className="kicker">No. V · Membership</p>
+            <p className="kicker">No. VII · Membership</p>
             <h2 className="display">
               Ready to start?
               <br />
