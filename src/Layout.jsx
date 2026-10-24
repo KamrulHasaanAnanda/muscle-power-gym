@@ -15,6 +15,8 @@ const titles = {
   '/dress-code': 'Dress code · Muscle Power Gym',
   '/rules': 'Rules & regulations · Muscle Power Gym',
   '/workout-chart': 'Workout chart · Muscle Power Gym',
+  '/weight-loss': 'Weight loss plan · Muscle Power Gym',
+  '/weight-gain': 'Weight gain plan · Muscle Power Gym',
 }
 
 export default function Layout() {
@@ -75,15 +77,22 @@ export default function Layout() {
             <NavLink to="/workout-chart" onClick={closeMenu}>
               Chart
             </NavLink>
+            <NavLink to="/weight-loss" onClick={closeMenu}>
+              Weight loss
+            </NavLink>
+            <NavLink to="/weight-gain" onClick={closeMenu}>
+              Weight gain
+            </NavLink>
             <Link to="/#hours" onClick={closeMenu}>
               Hours
             </Link>
             <Link to="/#contact" onClick={closeMenu}>
               Contact
             </Link>
-            <a className="btn btn-sm nav-cta" href={`tel:${PHONE_TEL}`}>
+            <a className="btn btn-sm nav-cta" href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`}>
               <PhoneIcon />
-              {PHONE}
+              <span className="nav-cta-short">Call</span>
+              <span className="nav-cta-full">{PHONE}</span>
             </a>
           </nav>
           <button
@@ -153,6 +162,8 @@ export default function Layout() {
               <Link to="/dress-code">Dress code</Link>
               <Link to="/rules">Rules</Link>
               <Link to="/workout-chart">Workout chart</Link>
+              <Link to="/weight-loss">Weight loss</Link>
+              <Link to="/weight-gain">Weight gain</Link>
               <a href="#top">Back to top ↑</a>
             </nav>
           </div>
