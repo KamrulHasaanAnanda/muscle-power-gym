@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { formatDate, loadPdfKit, makePlanPdf, planFileName } from '../pdf.js'
-import { ArrowIcon, ChatIcon, Icon, programs } from '../site.jsx'
+import { Icon, programs } from '../site.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -16,6 +16,34 @@ function toWhatsApp(raw) {
 
 const isBangladeshMobile = (raw) => /^8801\d{9}$/.test(toWhatsApp(raw))
 
+// Tidy whatever is typed or pasted (+880 1712 345678, 8801712345678,
+// 1712345678…) into the local 01712-345678 form
+function formatPhone(raw) {
+  let d = raw.replace(/\D/g, '')
+  if (d.startsWith('00')) d = d.slice(2)
+  if (d.startsWith('880')) d = d.slice(2)
+  if (/^1\d{9}$/.test(d)) d = `0${d}`
+  d = d.slice(0, 11)
+  return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d
+}
+
+// Weight like 82 or 82.5
+function formatWeight(raw) {
+  const [whole = '', ...rest] = raw.replace(/[^\d.]/g, '').split('.')
+  const tail = rest.join('').slice(0, 1)
+  return raw.includes('.') && whole ? `${whole.slice(0, 3)}.${tail}` : whole.slice(0, 3)
+}
+
+// Shared props for number-pad fields: plain text keeps typing and
+// pasting predictable, inputMode still brings up the number keypad
+const numberPad = {
+  type: 'text',
+  inputMode: 'numeric',
+  pattern: '[0-9]*',
+  autoComplete: 'off',
+  enterKeyHint: 'next',
+}
+
 // Whole numbers only, up to three digits
 const digits = (value) => value.replace(/\D/g, '').slice(0, 3)
 
@@ -29,16 +57,27 @@ function Box({ value, onChange, label, placeholder = ' ' }) {
   return (
     <input
       className="box"
-      type="number"
-      inputMode="numeric"
-      pattern="[0-9]*"
-      min="0"
+      {...numberPad}
       value={value || ''}
+      onFocus={(event) => event.target.select()}
       onChange={(event) => onChange(digits(event.target.value))}
       placeholder={placeholder}
       aria-label={label}
     />
   )
+}
+
+// Where a meal sits in the day, from its "8:00 AM" style time
+function mealPeriod(time) {
+  const [, h = '0', m = '0', ampm = 'AM'] = time.match(/(\d+):(\d+)\s*(AM|PM)/i) || []
+  const hour = (Number(h) % 12) + (ampm.toUpperCase() === 'PM' ? 12 : 0) + Number(m) / 60
+  if (hour < 10) return 'Breakfast'
+  if (hour < 12) return 'Mid-morning'
+  if (hour < 15) return 'Lunch'
+  if (hour < 18) return 'Afternoon'
+  if (hour < 21) return 'Evening'
+  if (hour < 23) return 'Dinner'
+  return 'Before bed'
 }
 
 const PdfIcon = () => (
@@ -50,7 +89,6 @@ const PdfIcon = () => (
 
 export default function Program({ id }) {
   const plan = programs[id]
-  const next = programs[plan.next]
 
   const [member, setMember] = useState({ name: '', phone: '', no: '', weight: '', date: today() })
   const [error, setError] = useState('')
@@ -73,6 +111,31 @@ export default function Program({ id }) {
       })
       .catch(() => {})
   }, [])
+
+  // Hide the floating bars while the phone keyboard is up so they
+  // don't cover the box being typed in
+  useEffect(() => {
+    const isField = (el) => el?.matches?.('input:not([type=checkbox]), textarea')
+    const update = () =>
+      setTimeout(() => document.body.classList.toggle('is-typing', isField(document.activeElement)))
+    document.addEventListener('focusin', update)
+    document.addEventListener('focusout', update)
+    return () => {
+      document.removeEventListener('focusin', update)
+      document.removeEventListener('focusout', update)
+      document.body.classList.remove('is-typing')
+    }
+  }, [])
+
+  // Enter / "Next" on the keyboard moves to the next box on the sheet
+  function nextField(event) {
+    if (event.key !== 'Enter' || event.target.tagName !== 'INPUT') return
+    event.preventDefault()
+    const fields = [...event.currentTarget.querySelectorAll('input:not([type=checkbox]), textarea')]
+    const next = fields[fields.indexOf(event.target) + 1]
+    if (next) next.focus()
+    else event.target.blur()
+  }
 
   const firstName = member.name.trim().split(/\s+/)[0]
   const memberReady = member.name.trim() && isBangladeshMobile(member.phone)
@@ -131,8 +194,7 @@ export default function Program({ id }) {
   const greeting = () =>
     `Hi ${firstName}, here is your ${plan.title.toLowerCase()} plan from Muscle Power Gym.`
 
-  // Opening the chat first puts the member at the top of WhatsApp's
-  // share list, even if they aren't saved as a contact.
+  // Open the member's chat so the downloaded PDF can be attached there
   function openChat() {
     if (!check()) return
     window.open(
@@ -140,7 +202,17 @@ export default function Program({ id }) {
       '_blank',
       'noopener,noreferrer',
     )
-    setStatus('Chat opened. Now tap Send PDF.')
+  }
+
+  function downloadPdf(file, filename) {
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 15000)
   }
 
   function sharePdf() {
@@ -162,23 +234,25 @@ export default function Program({ id }) {
     const filename = planFileName(member.name, id)
     const file = new File([doc.output('blob')], filename, { type: 'application/pdf' })
 
-    if (navigator.canShare?.({ files: [file] })) {
+    // Phones have a share sheet that can pass the file into the WhatsApp app.
+    // A computer does not: wa.me can only open a chat with text, never a PDF.
+    const phone = window.matchMedia('(pointer: coarse)').matches
+    if (phone && navigator.canShare?.({ files: [file] })) {
       navigator
         .share({ files: [file], title: `${plan.title} plan` })
         .then(() => setStatus('Sent.'))
-        .catch(() => {})
+        .catch((err) => {
+          if (err?.name === 'AbortError') return
+          downloadPdf(file, filename)
+          openChat()
+          setStatus('PDF downloaded. Attach it in the WhatsApp chat.')
+        })
       return
     }
 
-    // No share sheet (desktop): save the file and open the chat to attach it
-    const url = URL.createObjectURL(file)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(url), 10000)
+    downloadPdf(file, filename)
     openChat()
-    setStatus('PDF downloaded. Attach it in the WhatsApp chat.')
+    setStatus('PDF saved to Downloads. On a computer, attach that file in the WhatsApp chat — the site can’t drop it in for you.')
   }
 
   const steps = [
@@ -205,6 +279,14 @@ export default function Program({ id }) {
 
       <section className="program-body">
         <div className="container">
+          <nav className="sheet-switch" aria-label="Choose a sheet">
+            {Object.entries(programs).map(([key, p]) => (
+              <NavLink key={key} to={`/${key}`}>
+                {p.title}
+              </NavLink>
+            ))}
+          </nav>
+
           <ol className="how">
             {steps.map(([title, text, done], i) => (
               <li key={title} className={done ? 'is-done' : ''}>
@@ -217,7 +299,7 @@ export default function Program({ id }) {
             ))}
           </ol>
 
-          <article className="paper">
+          <article className="paper" onKeyDown={nextField}>
             <header className="paper-head">
               <img src="/images/logo-badge.png" alt="" width="54" height="68" />
               <div>
@@ -239,6 +321,8 @@ export default function Program({ id }) {
                   maxLength={40}
                   placeholder="Write name"
                   autoComplete="off"
+                  autoCapitalize="words"
+                  enterKeyHint="next"
                 />
               </label>
               <label className={`line line-wide${error === 'phone' ? ' is-bad' : ''}`}>
@@ -246,20 +330,26 @@ export default function Program({ id }) {
                 <input
                   ref={phoneInput}
                   type="tel"
-                  inputMode="numeric"
+                  inputMode="tel"
                   value={member.phone}
-                  onChange={updateMember('phone')}
-                  maxLength={14}
+                  onChange={(event) => {
+                    setMember((m) => ({ ...m, phone: formatPhone(event.target.value) }))
+                    setError('')
+                  }}
                   placeholder="01XXX-XXXXXX"
                   autoComplete="off"
+                  enterKeyHint="next"
                 />
+                {isBangladeshMobile(member.phone) && (
+                  <i className="line-ok" aria-label="Valid number">
+                    ✓
+                  </i>
+                )}
               </label>
               <label className="line">
                 <span>Member no.</span>
                 <input
-                  type="number"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
+                  {...numberPad}
                   value={member.no}
                   onChange={(event) =>
                     setMember((m) => ({ ...m, no: event.target.value.replace(/\D/g, '').slice(0, 8) }))
@@ -269,13 +359,12 @@ export default function Program({ id }) {
               <label className="line">
                 <span>Weight (kg)</span>
                 <input
-                  type="number"
+                  {...numberPad}
                   inputMode="decimal"
-                  min="0"
-                  step="0.1"
+                  pattern={undefined}
                   value={member.weight}
                   onChange={(event) =>
-                    setMember((m) => ({ ...m, weight: event.target.value.slice(0, 5) }))
+                    setMember((m) => ({ ...m, weight: formatWeight(event.target.value) }))
                   }
                 />
               </label>
@@ -375,6 +464,7 @@ export default function Program({ id }) {
                                     onChange={(event) => setExtra(b, i, 'name')(event.target.value)}
                                     maxLength={30}
                                     placeholder="Exercise name"
+                                    enterKeyHint="next"
                                     aria-label="Exercise name"
                                   />
                                   <button
@@ -429,33 +519,39 @@ export default function Program({ id }) {
 
           <article className={`paper diet${withDiet ? '' : ' is-off'}`}>
             <header className="diet-head">
-              <h3 className="chart-title">Diet chart</h3>
-              <label className="diet-toggle">
+              <div>
+                <h3 className="chart-title">Diet chart</h3>
+                <p className="diet-sub">{plan.diet.length} meals through the day</p>
+              </div>
+              <label className="diet-switch">
                 <input
                   type="checkbox"
                   checked={withDiet}
                   onChange={(event) => setWithDiet(event.target.checked)}
                 />
-                Add to PDF
+                <span aria-hidden="true" />
+                {withDiet ? 'In PDF' : 'Not in PDF'}
               </label>
             </header>
             <ol className="meals">
-              {plan.diet.map(([time, foods], i) => (
-                <li key={time}>
-                  <p>
-                    <b>Meal-{i + 1}</b> : <time>{time}</time>
-                  </p>
-                  <p>{foods.join(', ')}</p>
-                </li>
-              ))}
+              {plan.diet.map(([time, foods], i) => {
+                const [clock, ampm] = time.split(' ')
+                return (
+                  <li key={time} className="meal">
+                    <time className="meal-time">
+                      {clock}
+                      <small>{ampm}</small>
+                    </time>
+                    <p className="meal-label">
+                      <small>Meal {i + 1}</small>
+                      {mealPeriod(time)}
+                    </p>
+                    <p className="meal-foods">{foods.join(' · ')}</p>
+                  </li>
+                )
+              })}
             </ol>
           </article>
-
-          <Link className="next-link" to={`/${plan.next}`}>
-            <span>Next</span>
-            {next.title} plan
-            <ArrowIcon />
-          </Link>
         </div>
       </section>
 
@@ -473,19 +569,11 @@ export default function Program({ id }) {
                   : 'Fill in the sheet first')}
             </p>
           </div>
-          <button
-            type="button"
-            className="chat-btn"
-            onClick={openChat}
-            aria-label="Open member’s WhatsApp chat"
-            title="Open member’s WhatsApp chat"
-          >
-            <ChatIcon />
-            <span>Chat</span>
-          </button>
           <button type="button" className="btn send-btn" onClick={sharePdf}>
             <PdfIcon />
-            Send<span className="send-btn-pdf"> PDF</span>
+            <span>
+              Send<span className="send-btn-pdf"> PDF</span>
+            </span>
           </button>
         </div>
       </div>
