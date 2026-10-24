@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { formatDate, loadPdfKit, makePlanPdf, planFileName } from '../pdf.js'
-import { formatPhone, Icon, programs } from '../site.jsx'
+import { ChatIcon, formatPhone, Icon, PHONE, programs } from '../site.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -15,6 +15,8 @@ function toWhatsApp(raw) {
 }
 
 const isBangladeshMobile = (raw) => /^8801\d{9}$/.test(toWhatsApp(raw))
+
+const isEmail = (raw) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(raw.trim())
 
 // Weight like 82 or 82.5
 function formatWeight(raw) {
@@ -69,17 +71,24 @@ function mealPeriod(time) {
   return 'Before bed'
 }
 
-const PdfIcon = () => (
+const MailIcon = () => (
   <Icon size={18}>
-    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-    <path d="M14 3v5h5M9 13h6M9 17h4" />
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 7l9 6 9-6" />
   </Icon>
 )
 
 export default function Program({ id }) {
   const plan = programs[id]
 
-  const [member, setMember] = useState({ name: '', phone: '', no: '', weight: '', date: today() })
+  const [member, setMember] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    no: '',
+    weight: '',
+    date: today(),
+  })
   const [error, setError] = useState('')
   const [values, setValues] = useState({})
   const [fill, setFill] = useState({})
@@ -90,6 +99,7 @@ export default function Program({ id }) {
   const pdfKit = useRef(null)
   const nameInput = useRef(null)
   const phoneInput = useRef(null)
+  const emailInput = useRef(null)
 
   // Load jsPDF and the logos up front so tapping "Send PDF" can share
   // straight away; phones only allow sharing directly from a tap.
@@ -127,7 +137,9 @@ export default function Program({ id }) {
   }
 
   const firstName = member.name.trim().split(/\s+/)[0]
-  const memberReady = member.name.trim() && isBangladeshMobile(member.phone)
+  const hasPhone = isBangladeshMobile(member.phone)
+  const hasEmail = isEmail(member.email)
+  const memberReady = member.name.trim() && (hasPhone || hasEmail)
   const filled = Object.values(values).filter((v) => v.rep || v.set).length
 
   const updateMember = (field) => (event) => {
@@ -169,14 +181,22 @@ export default function Program({ id }) {
     setExtras((e) => ({ ...e, [b]: e[b].filter((_, i) => i !== index) }))
   }
 
-  function check() {
-    const bad = !member.name.trim() ? 'name' : !isBangladeshMobile(member.phone) ? 'phone' : ''
+  // Name plus the contact the chosen channel needs: a WhatsApp number or an email
+  function check(channel) {
+    const contactOk = channel === 'email' ? hasEmail : hasPhone
+    const bad = !member.name.trim() ? 'name' : contactOk ? '' : channel === 'email' ? 'email' : 'phone'
     if (!bad) return true
     setError(bad)
-    const input = bad === 'name' ? nameInput.current : phoneInput.current
+    const input = { name: nameInput, phone: phoneInput, email: emailInput }[bad].current
     input?.scrollIntoView({ block: 'center', behavior: 'smooth' })
     input?.focus({ preventScroll: true })
-    setStatus(bad === 'name' ? 'Write the member’s name first.' : 'Write a valid WhatsApp number first.')
+    setStatus(
+      {
+        name: 'Write the member’s name first.',
+        phone: 'Write a valid WhatsApp number first.',
+        email: 'Write a valid email address first.',
+      }[bad],
+    )
     return false
   }
 
@@ -185,7 +205,7 @@ export default function Program({ id }) {
 
   // Open the member's chat so the downloaded PDF can be attached there
   function openChat() {
-    if (!check()) return
+    if (!check('whatsapp')) return
     window.open(
       `https://wa.me/${toWhatsApp(member.phone)}?text=${encodeURIComponent(greeting())}`,
       '_blank',
@@ -204,11 +224,11 @@ export default function Program({ id }) {
     setTimeout(() => URL.revokeObjectURL(url), 15000)
   }
 
-  function sharePdf() {
-    if (!check()) return
+  // Build the sheet as a PDF file, or explain why it can't be built yet
+  function buildPdf() {
     if (!pdfKit.current) {
       setStatus('PDF is still loading. Try again in a second.')
-      return
+      return null
     }
     const { JsPDF, images } = pdfKit.current
     const doc = makePlanPdf(JsPDF, images, {
@@ -221,33 +241,80 @@ export default function Program({ id }) {
       date: formatDate(member.date),
     })
     const filename = planFileName(member.name, id)
-    const file = new File([doc.output('blob')], filename, { type: 'application/pdf' })
+    return new File([doc.output('blob')], filename, { type: 'application/pdf' })
+  }
+
+  const canShareFile = (file) =>
+    window.matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [file] })
+
+  function sharePdf() {
+    if (!check('whatsapp')) return
+    const file = buildPdf()
+    if (!file) return
 
     // Phones have a share sheet that can pass the file into the WhatsApp app.
     // A computer does not: wa.me can only open a chat with text, never a PDF.
-    const phone = window.matchMedia('(pointer: coarse)').matches
-    if (phone && navigator.canShare?.({ files: [file] })) {
+    if (canShareFile(file)) {
       navigator
         .share({ files: [file], title: `${plan.title} plan` })
         .then(() => setStatus('Sent.'))
         .catch((err) => {
           if (err?.name === 'AbortError') return
-          downloadPdf(file, filename)
+          downloadPdf(file, file.name)
           openChat()
           setStatus('PDF downloaded. Attach it in the WhatsApp chat.')
         })
       return
     }
 
-    downloadPdf(file, filename)
+    downloadPdf(file, file.name)
     openChat()
     setStatus('PDF saved to Downloads. On a computer, attach that file in the WhatsApp chat — the site can’t drop it in for you.')
   }
 
+  // Open the email app addressed to the member; mailto links can't carry attachments
+  function openEmail() {
+    const subject = `Your ${plan.title.toLowerCase()} plan · Muscle Power Gym`
+    const body = `${greeting()}\n\nYour plan is attached as a PDF.\n\nMuscle Power Gym\n${PHONE}`
+    const link = document.createElement('a')
+    link.href = `mailto:${member.email.trim()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    link.click()
+  }
+
+  function emailPdf() {
+    if (!check('email')) return
+    const file = buildPdf()
+    if (!file) return
+
+    // Phones: the share sheet attaches the PDF in Gmail / Mail, but a website can't
+    // fill in the recipient, so put the address on the clipboard to paste in "To"
+    if (canShareFile(file)) {
+      navigator.clipboard?.writeText(member.email.trim()).catch(() => {})
+      setStatus(`Pick Gmail or Mail. ${member.email.trim()} is copied — paste it in “To”.`)
+      navigator
+        .share({ files: [file], title: `${plan.title} plan`, text: greeting() })
+        .then(() => setStatus('Sent.'))
+        .catch((err) => {
+          if (err?.name === 'AbortError') {
+            setStatus('')
+            return
+          }
+          downloadPdf(file, file.name)
+          openEmail()
+          setStatus('PDF downloaded. Attach it to the email that just opened.')
+        })
+      return
+    }
+
+    downloadPdf(file, file.name)
+    openEmail()
+    setStatus('PDF saved to Downloads. Attach that file to the email that just opened.')
+  }
+
   const steps = [
-    ['Member', 'Name and WhatsApp number', memberReady],
+    ['Member', 'Name and WhatsApp or email', memberReady],
     ['Reps & sets', 'Write them in the boxes', filled > 0],
-    ['Send', 'Tap Send PDF at the bottom', false],
+    ['Send', 'WhatsApp or email it from the bar below', false],
   ]
 
   return (
@@ -331,6 +398,27 @@ export default function Program({ id }) {
                 />
                 {isBangladeshMobile(member.phone) && (
                   <i className="line-ok" aria-label="Valid number">
+                    ✓
+                  </i>
+                )}
+              </label>
+              <label className={`line line-full${error === 'email' ? ' is-bad' : ''}`}>
+                <span>Email</span>
+                <input
+                  ref={emailInput}
+                  type="email"
+                  inputMode="email"
+                  value={member.email}
+                  onChange={updateMember('email')}
+                  maxLength={80}
+                  placeholder="Optional, to email the PDF"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  enterKeyHint="next"
+                />
+                {hasEmail && (
+                  <i className="line-ok" aria-label="Valid email">
                     ✓
                   </i>
                 )}
@@ -554,15 +642,22 @@ export default function Program({ id }) {
             <p role="status" className={status ? 'is-status' : ''}>
               {status ||
                 (memberReady
-                  ? `+88 ${member.phone.trim()} · ${filled} filled`
+                  ? `${hasPhone ? `+88 ${member.phone.trim()}` : member.email.trim()} · ${filled} filled`
                   : 'Fill in the sheet first')}
             </p>
           </div>
-          <button type="button" className="btn send-btn" onClick={sharePdf}>
-            <PdfIcon />
-            <span>
-              Send<span className="send-btn-pdf"> PDF</span>
-            </span>
+          <button
+            type="button"
+            className="btn btn-ghost send-btn send-btn-mail"
+            onClick={emailPdf}
+            aria-label="Email the PDF"
+          >
+            <MailIcon />
+            <span className="send-btn-label">Email</span>
+          </button>
+          <button type="button" className="btn send-btn" onClick={sharePdf} aria-label="Send the PDF on WhatsApp">
+            <ChatIcon />
+            <span>WhatsApp</span>
           </button>
         </div>
       </div>

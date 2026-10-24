@@ -836,26 +836,6 @@
   opacity: 0.1;
 }
 
-.ink .guide:hover {
-  background: var(--cream);
-  color: var(--ink);
-  outline-color: rgba(21, 18, 15, 0.25);
-}
-
-.ink .guide:hover p {
-  color: #5e564b;
-}
-
-.ink .guide:hover .guide-num,
-.ink .guide:hover .feature-icon {
-  color: var(--red);
-}
-
-.ink .guide:hover .feature-icon {
-  border-color: var(--ink);
-  box-shadow: inset 0 0 0 4px var(--cream), inset 0 0 0 5px rgba(21, 18, 15, 0.2);
-}
-
 /* Phone quick actions (Call / WhatsApp) */
 
 .quick-bar {
@@ -1139,32 +1119,6 @@
   border-radius: 50%;
   border: 1px solid currentColor;
   transition: transform 0.2s, background 0.2s, border-color 0.2s;
-}
-
-.guide:hover {
-  background: var(--ink);
-  color: var(--cream);
-  outline-color: rgba(243, 237, 225, 0.4);
-}
-
-.guide:hover p {
-  color: rgba(243, 237, 225, 0.72);
-}
-
-.guide:hover .guide-num {
-  color: var(--red-bright);
-}
-
-.guide:hover .feature-icon {
-  color: var(--red-bright);
-  border-color: var(--cream);
-  box-shadow: inset 0 0 0 4px var(--ink), inset 0 0 0 5px rgba(243, 237, 225, 0.35);
-}
-
-.guide:hover .guide-arrow {
-  transform: translateX(0.3rem);
-  background: var(--red);
-  border-color: var(--red);
 }
 
 @media (max-width: 980px) {
@@ -2521,10 +2475,6 @@
   transition: opacity 0.25s;
 }
 
-.guide:hover::before {
-  opacity: 0;
-}
-
 /* One watermark per section: drop the per-item copies where items stack */
 .features li::before {
   content: none;
@@ -2756,6 +2706,10 @@ article.paper {
 
 .line-wide {
   grid-column: span 3;
+}
+
+.line-full {
+  grid-column: 1 / -1;
 }
 
 .line > span {
@@ -3336,6 +3290,17 @@ article.paper {
   box-shadow: none;
 }
 
+.send-btn-mail {
+  color: var(--ink);
+  border-color: rgba(21, 18, 15, 0.25);
+}
+
+.send-btn-mail:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
 @media (max-width: 760px) {
   .paper-cols {
     grid-template-columns: 1fr;
@@ -3421,8 +3386,13 @@ article.paper {
   }
 
   .send-avatar,
-  .send-btn-pdf {
+  .send-btn-label {
     display: none;
+  }
+
+  .send-btn-mail {
+    width: 3rem;
+    padding-inline: 0;
   }
 }
 
@@ -3695,4 +3665,29 @@ button {
 ::selection {
   background: var(--red);
   color: var(--white);
+}
+
+/* ---------- Guide cards: quiet hover (no colour flip) ---------- */
+
+@media (hover: hover) {
+  .guide {
+    transition: background 0.2s, border-color 0.2s, outline-color 0.2s;
+  }
+
+  .guide:hover {
+    background: rgba(255, 255, 255, 0.6);
+    outline-color: var(--red);
+  }
+
+  .ink .guide:hover {
+    background: rgba(243, 237, 225, 0.1);
+    border-color: rgba(243, 237, 225, 0.6);
+    outline-color: var(--red-bright);
+  }
+
+  .guide:hover .guide-arrow {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--cream);
+  }
 }
