@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Lightbox from '../Lightbox.jsx'
 import {
   ArrowIcon,
   ChatIcon,
@@ -80,6 +81,66 @@ const gallery = [
   },
 ]
 
+const community = [
+  {
+    src: '/images/athlete-tarek.jpg',
+    alt: 'Poster congratulating Tarek Mohiuddin on gold medals at IFBB Pro League Thailand 2026 and 6th runner-up at Mr. Universe Thailand 2026',
+    cap: 'Tarek Mohiuddin · IFBB Pro League Thailand 2026',
+    size: 'community-star',
+    poster: true,
+  },
+  {
+    src: '/images/community-group.jpg',
+    alt: 'Large group of male members posing together on the gym floor',
+    cap: 'Our members',
+    size: 'community-wide',
+  },
+  {
+    src: '/images/ladies-event.jpg',
+    alt: 'Female members in saris and salwar kameez gathered for an event at the gym',
+    cap: 'Ladies’ get-together',
+  },
+  {
+    src: '/images/community-celebration.jpg',
+    alt: 'Members crowding around an athlete holding a prize cheque on the gym floor',
+    cap: 'Celebrating a win',
+    size: 'community-cheer',
+  },
+]
+
+// Every photo the viewer can step through, gallery first
+const photos = [...gallery, ...community]
+
+// [thumbnail width, full width] for each photo; thumbnails live in /images/sm/
+const photoWidths = {
+  'equip-chest': [480, 825],
+  'equip-squat': [480, 825],
+  'equip-preacher': [480, 825],
+  'equip-machines': [480, 825],
+  'floor-treadmill': [480, 825],
+  'equip-rack': [480, 825],
+  'cardio-bikes': [480, 825],
+  'gym-4': [640, 1600],
+  'athlete-tarek': [480, 825],
+  'community-group': [640, 1100],
+  'ladies-event': [640, 1100],
+  'community-celebration': [510, 877],
+}
+
+// Lets phones download the small version while big screens get the full photo
+function srcSet(src) {
+  const [small, full] = photoWidths[src.split('/').pop().replace('.jpg', '')]
+  return `${src.replace('/images/', '/images/sm/')} ${small}w, ${src} ${full}w`
+}
+
+const tileSizes = {
+  'gallery-big': '(min-width: 760px) 50vw, 100vw',
+  'gallery-wide': '(min-width: 760px) 50vw, 100vw',
+  'community-star': '(min-width: 760px) 40vw, 100vw',
+  'community-wide': '(min-width: 760px) 60vw, 100vw',
+}
+const defaultTileSize = '(min-width: 760px) 30vw, 50vw'
+
 export default function Home() {
   const [sent, setSent] = useState(false)
   const { today, open, ladies } = useGymStatus()
@@ -88,6 +149,25 @@ export default function Home() {
   const [heroVisible, setHeroVisible] = useState(true)
   const [contactVisible, setContactVisible] = useState(false)
   const barHidden = heroVisible || contactVisible
+  const [viewing, setViewing] = useState(null)
+  const [showMap, setShowMap] = useState(false)
+  // Only the first banner photo loads up front; the rest wait until the page has finished loading
+  const [slidesReady, setSlidesReady] = useState(false)
+
+  useEffect(() => {
+    if (document.readyState === 'complete') {
+      setSlidesReady(true)
+      return
+    }
+    const ready = () => setSlidesReady(true)
+    window.addEventListener('load', ready, { once: true })
+    return () => window.removeEventListener('load', ready)
+  }, [])
+  const closeViewer = useCallback(() => setViewing(null), [])
+  const stepViewer = useCallback(
+    (dir) => setViewing((i) => (i + dir + photos.length) % photos.length),
+    [],
+  )
 
   // Phone/tablet action bar: show once the hero's buttons scroll away, hide again from the contact section down
   useEffect(() => {
@@ -127,13 +207,13 @@ export default function Home() {
 
   return (
     <main id="top">
-      <section className="hero" ref={heroRef}>
+      <section className={`hero${heroVisible ? '' : ' is-away'}`} ref={heroRef}>
         <div className="hero-slides" aria-hidden="true">
           {heroSlides.map((src, i) => (
             <img
               key={src}
               className="hero-bg"
-              src={src}
+              src={i === 0 || slidesReady ? src : undefined}
               alt=""
               fetchPriority={i === 0 ? 'high' : 'low'}
               decoding="async"
@@ -224,10 +304,23 @@ export default function Home() {
           </ul>
 
           <div className="gallery">
-            {gallery.map((g) => (
+            {gallery.map((g, i) => (
               <figure key={g.src} className={`photo ${g.size || ''}`}>
-                <img src={g.src} alt={g.alt} loading="lazy" />
+                <img
+                  src={g.src}
+                  srcSet={srcSet(g.src)}
+                  sizes={tileSizes[g.size] || defaultTileSize}
+                  alt={g.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <figcaption className="photo-cap">{g.cap}</figcaption>
+                <button
+                  className="photo-open"
+                  type="button"
+                  aria-label={`View photo: ${g.cap}`}
+                  onClick={() => setViewing(i)}
+                />
               </figure>
             ))}
           </div>
@@ -251,37 +344,25 @@ export default function Home() {
             </p>
           </header>
           <div className="community">
-            <figure className="photo community-star">
-              <img
-                src="/images/athlete-tarek.jpg"
-                alt="Poster congratulating Tarek Mohiuddin on gold medals at IFBB Pro League Thailand 2026 and 6th runner-up at Mr. Universe Thailand 2026"
-                loading="lazy"
-              />
-            </figure>
-            <figure className="photo community-wide">
-              <img
-                src="/images/community-group.jpg"
-                alt="Large group of male members posing together on the gym floor"
-                loading="lazy"
-              />
-              <figcaption className="photo-cap">Our members</figcaption>
-            </figure>
-            <figure className="photo">
-              <img
-                src="/images/ladies-event.jpg"
-                alt="Female members in saris and salwar kameez gathered for an event at the gym"
-                loading="lazy"
-              />
-              <figcaption className="photo-cap">Ladies’ get-together</figcaption>
-            </figure>
-            <figure className="photo community-cheer">
-              <img
-                src="/images/community-celebration.jpg"
-                alt="Members crowding around an athlete holding a prize cheque on the gym floor"
-                loading="lazy"
-              />
-              <figcaption className="photo-cap">Celebrating a win</figcaption>
-            </figure>
+            {community.map((c, i) => (
+              <figure key={c.src} className={`photo ${c.size || ''}`}>
+                <img
+                  src={c.src}
+                  srcSet={srcSet(c.src)}
+                  sizes={tileSizes[c.size] || defaultTileSize}
+                  alt={c.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+                {!c.poster && <figcaption className="photo-cap">{c.cap}</figcaption>}
+                <button
+                  className="photo-open"
+                  type="button"
+                  aria-label={`View photo: ${c.cap}`}
+                  onClick={() => setViewing(gallery.length + i)}
+                />
+              </figure>
+            ))}
           </div>
         </div>
       </section>
@@ -343,12 +424,21 @@ export default function Home() {
             </div>
 
             <div className="visit-map">
-              <iframe
-                title="Muscle Power Gym on Google Maps"
-                src={MAP_EMBED}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              {/* The Google embed is heavy, so it only loads when asked for */}
+              {showMap ? (
+                <iframe
+                  title="Muscle Power Gym on Google Maps"
+                  src={MAP_EMBED}
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              ) : (
+                <button className="map-cover" type="button" onClick={() => setShowMap(true)}>
+                  <PinIcon />
+                  <strong>Port Connecting Road, Halishahar</strong>
+                  <span>Top floor, above Rangs eMart</span>
+                  <em>Tap to load the map</em>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -541,6 +631,10 @@ export default function Home() {
           WhatsApp
         </a>
       </div>
+
+      {viewing !== null && (
+        <Lightbox photos={photos} index={viewing} onClose={closeViewer} onStep={stepViewer} />
+      )}
     </main>
   )
 }

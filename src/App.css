@@ -190,8 +190,7 @@
 .hero .btn-ghost {
   color: var(--white);
   border-color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(6px);
+  background: rgba(21, 18, 15, 0.35);
 }
 
 .hero .btn-ghost:hover {
@@ -276,7 +275,6 @@
 
 .nav.is-solid {
   background: rgba(21, 18, 15, 0.95);
-  backdrop-filter: blur(10px);
   border-bottom-color: rgba(243, 237, 225, 0.12);
 }
 
@@ -423,7 +421,7 @@
   transform: translateY(-0.3rem) rotate(-45deg);
 }
 
-@media (max-width: 1360px) {
+@media (max-width: 1080px) {
   .nav-cta-short {
     display: none;
   }
@@ -525,9 +523,14 @@
   height: 100%;
   object-fit: cover;
   object-position: 50% 30%;
-  filter: grayscale(0.4) contrast(1.1) brightness(0.95);
   opacity: 0;
+  will-change: opacity, transform;
   animation: hero-slide 30s linear infinite;
+}
+
+/* Stop the slideshow while the banner is scrolled out of view (saves battery on low-end phones) */
+.hero.is-away .hero-bg {
+  animation-play-state: paused;
 }
 
 /* 5 slides × 6s: fade in 1.2s, hold, fade out while the next fades in */
@@ -870,7 +873,6 @@
     padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
     background: rgba(21, 18, 15, 0.94);
     border-top: 1px solid rgba(243, 237, 225, 0.15);
-    backdrop-filter: blur(8px);
     transform: translateY(110%);
     transition: transform 0.3s ease;
   }
@@ -1312,7 +1314,63 @@
   filter: grayscale(1) sepia(0.25) contrast(0.95);
 }
 
+.map-cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  padding: 2rem;
+  border: 0;
+  color: var(--ink);
+  text-align: center;
+  cursor: pointer;
+  background:
+    linear-gradient(rgba(243, 237, 225, 0.82), rgba(243, 237, 225, 0.82)),
+    repeating-linear-gradient(0deg, transparent 0 46px, rgba(21, 18, 15, 0.08) 46px 48px),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(21, 18, 15, 0.08) 46px 48px),
+    #e7e0d2;
+}
+
+.map-cover svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.4rem;
+  color: var(--red);
+}
+
+.map-cover strong {
+  font-family: var(--heading);
+  font-size: 1.35rem;
+}
+
+.map-cover span {
+  color: #5e564b;
+}
+
+.map-cover em {
+  margin-top: 1rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--cream);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.map-cover:hover em {
+  background: var(--red);
+}
+
 @media (max-width: 860px) {
+  .map-cover {
+    min-height: 320px;
+  }
+
   .visit {
     grid-template-columns: 1fr;
   }
@@ -2030,7 +2088,6 @@
     border-bottom: 1px solid rgba(243, 237, 225, 0.12);
     outline: 0;
     background: rgba(21, 18, 15, 0.96);
-    backdrop-filter: blur(8px);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -2419,7 +2476,7 @@
   width: min(78%, 12rem);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
-  background: url("/images/logo-mark.png") center / contain no-repeat;
+  background: url("/images/logo-mark-web.png") center / contain no-repeat;
   opacity: 0.18;
   mix-blend-mode: multiply;
   pointer-events: none;
@@ -3389,5 +3446,159 @@ article.paper {
 
   .add-row {
     padding-block: 0.8rem;
+  }
+}
+
+/* ---------- Photo viewer ---------- */
+
+.photo-open {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.photo-open:focus-visible {
+  outline: 3px solid var(--red-bright);
+  outline-offset: -3px;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 4.5rem 1rem 6rem;
+  background: rgba(12, 10, 9, 0.97);
+  animation: lightbox-in 0.25s ease;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.lightbox-figure {
+  margin: 0;
+  max-width: min(100%, 1100px);
+}
+
+.lightbox-figure img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100svh - 12rem);
+  margin-inline: auto;
+  object-fit: contain;
+  animation: lightbox-in 0.3s ease;
+}
+
+.lightbox-figure figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.85rem;
+  color: var(--cream);
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lightbox-count {
+  color: rgba(243, 237, 225, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.lightbox-close,
+.lightbox-nav button {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgba(243, 237, 225, 0.3);
+  border-radius: 50%;
+  background: rgba(243, 237, 225, 0.08);
+  color: var(--cream);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.lightbox-close:hover,
+.lightbox-nav button:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: calc(1rem + env(safe-area-inset-top));
+  right: 1rem;
+}
+
+.lightbox-nav {
+  position: absolute;
+  inset: auto 0 calc(1.25rem + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  pointer-events: none;
+}
+
+.lightbox-nav button {
+  pointer-events: auto;
+}
+
+@media (min-width: 900px) {
+  .lightbox-nav {
+    inset: 50% 1.5rem auto;
+    justify-content: space-between;
+    transform: translateY(-50%);
+  }
+
+  .lightbox-nav button {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+/* ---------- Home: one clean watermark-free read ---------- */
+
+#facilities .head::before,
+#community .head::before,
+#hours .head::before,
+#join .head::before,
+#guides .head::before,
+#contact .head::before,
+#join .steps li::before,
+#guides .guide::before,
+#hours .visit-info::before {
+  content: none;
+}
+
+/* ---------- Scroll reveal (class added by Layout) ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(1.25rem);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

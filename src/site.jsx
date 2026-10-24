@@ -284,7 +284,7 @@ export function Mark() {
   return (
     <img
       className="wm-logo"
-      src="/images/logo-mark.png"
+      src="/images/logo-mark-web.png"
       alt=""
       aria-hidden="true"
       draggable="false"

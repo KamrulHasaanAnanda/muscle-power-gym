@@ -301,7 +301,7 @@ export default function Program({ id }) {
 
           <article className="paper" onKeyDown={nextField}>
             <header className="paper-head">
-              <img src="/images/logo-badge.png" alt="" width="54" height="68" />
+              <img src="/images/logo-badge-web.png" alt="" width="54" height="68" />
               <div>
                 <p className="paper-brand">
                   <b>Muscle</b> <b>Power</b> <b>Gym</b>

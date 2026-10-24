@@ -23,6 +23,7 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
+  const [activeSection, setActiveSection] = useState(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -44,6 +45,61 @@ export default function Layout() {
     window.scrollTo(0, 0)
   }, [location.pathname, location.hash])
 
+  // Fade content up as it scrolls into view; siblings stagger slightly
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const targets = document.querySelectorAll(
+      'main .section .head, main .facilities-lead, main .features li, main .gallery .photo, main .community .photo, main .steps li, main .guide, main .visit-info, main .visit-map, main .contact, main .chart-board, main .rule-group, main .kit li',
+    )
+    const pending = new Set(targets)
+    let frame = 0
+    // Reveal anything that has reached or scrolled past the lower edge, so a fast flick can't skip items
+    const check = () => {
+      frame = 0
+      const limit = window.innerHeight * 0.92
+      for (const el of pending) {
+        if (el.getBoundingClientRect().top < limit) {
+          el.classList.add('is-in')
+          pending.delete(el)
+        }
+      }
+    }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(check)
+    }
+    targets.forEach((el) => {
+      const index = [...el.parentElement.children].indexOf(el)
+      el.style.setProperty('--reveal-delay', `${(index % 4) * 0.08}s`)
+      el.classList.add('reveal')
+    })
+    check()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+    }
+  }, [location.pathname])
+
+  // Home page: underline the nav link for the section in the middle of the screen
+  useEffect(() => {
+    setActiveSection(null)
+    if (location.pathname !== '/') return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(entry.target.id)
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    )
+    document.querySelectorAll('main > section[id]').forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [location.pathname])
+
+  const sectionLink = (id) => (activeSection === id ? 'active' : undefined)
+
   function closeMenu() {
     setMenuOpen(false)
   }
@@ -55,20 +111,20 @@ export default function Layout() {
         <div className="container nav-inner">
           <Link className="brand" to="/" onClick={closeMenu}>
             <span className="brand-tile">
-              <img src="/images/logo-badge.png" alt="" width="40" height="51" />
+              <img src="/images/logo-badge-web.png" alt="" width="40" height="51" />
             </span>
             <span className="brand-name">
               Muscle Power <em>Gym</em>
             </span>
           </Link>
           <nav id="site-nav" className={menuOpen ? 'open' : ''} aria-label="Main">
-            <Link to="/#facilities" onClick={closeMenu}>
+            <Link className={sectionLink('facilities')} to="/#facilities" onClick={closeMenu}>
               Facilities
             </Link>
-            <Link to="/#hours" onClick={closeMenu}>
+            <Link className={sectionLink('hours')} to="/#hours" onClick={closeMenu}>
               Hours
             </Link>
-            <Link to="/#join" onClick={closeMenu}>
+            <Link className={sectionLink('join')} to="/#join" onClick={closeMenu}>
               Join
             </Link>
             <NavLink to="/dress-code" onClick={closeMenu}>
@@ -77,7 +133,7 @@ export default function Layout() {
             <NavLink to="/rules" onClick={closeMenu}>
               Rules
             </NavLink>
-            <Link to="/#contact" onClick={closeMenu}>
+            <Link className={sectionLink('contact')} to="/#contact" onClick={closeMenu}>
               Contact
             </Link>
             <a className="btn btn-sm nav-cta" href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`}>
@@ -106,7 +162,7 @@ export default function Layout() {
         <div className="container">
           <div className="foot-brand">
             <span className="foot-logo">
-              <img src="/images/logo-badge.png" alt="Muscle Power Gym" width="69" height="88" />
+              <img src="/images/logo-badge-web.png" alt="Muscle Power Gym" width="69" height="88" />
             </span>
             <p className="foot-name">Muscle Power Gym</p>
             <p className="foot-tag">Change your lifestyle.</p>
