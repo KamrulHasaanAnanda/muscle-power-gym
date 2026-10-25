@@ -5,11 +5,16 @@ import Lightbox from '../Lightbox.jsx'
 import {
   ArrowIcon,
   ChatIcon,
+  copyWhatsAppNumber,
   FACEBOOK,
   FacebookIcon,
   FemaleIcon,
+  GYM_MAIL,
+  GYM_MAILTO,
+  copyGymMail,
   Icon,
   MaleIcon,
+  MailIcon,
   MAPS,
   MAP_EMBED,
   PHONE,
@@ -204,6 +209,7 @@ export default function Home() {
     } catch {
       // WhatsApp still opens if the API is down
     }
+    copyWhatsAppNumber(PHONE)
     window.open(
       `${WHATSAPP}?text=${encodeURIComponent(text)}`,
       '_blank',
@@ -253,6 +259,7 @@ export default function Home() {
               href={WHATSAPP}
               target="_blank"
               rel="noreferrer"
+              onClick={() => copyWhatsAppNumber(PHONE)}
             >
               <ChatIcon />
               WhatsApp us
@@ -481,7 +488,13 @@ export default function Home() {
               <PhoneIcon />
               Call {PHONE}
             </a>
-            <a className="btn btn-lg btn-ghost" href={WHATSAPP} target="_blank" rel="noreferrer">
+            <a
+              className="btn btn-lg btn-ghost"
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => copyWhatsAppNumber(PHONE)}
+            >
               <ChatIcon />
               WhatsApp us
             </a>
@@ -584,6 +597,12 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
+                  <a href={GYM_MAILTO} onClick={copyGymMail}>
+                    <MailIcon />
+                    {GYM_MAIL}
+                  </a>
+                </li>
+                <li>
                   <a href={FACEBOOK} target="_blank" rel="noreferrer">
                     <FacebookIcon />
                     Muscle Power Gym Chittagong
@@ -631,7 +650,12 @@ export default function Home() {
               ) : (
                 <p className="form-note">
                   Opens WhatsApp with your message filled in, or{' '}
-                  <a href={WHATSAPP} target="_blank" rel="noreferrer">
+                  <a
+                    href={WHATSAPP}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => copyWhatsAppNumber(PHONE)}
+                  >
                     chat directly
                   </a>
                   .
@@ -653,6 +677,7 @@ export default function Home() {
           target="_blank"
           rel="noreferrer"
           tabIndex={barHidden ? -1 : 0}
+          onClick={() => copyWhatsAppNumber(PHONE)}
         >
           <ChatIcon />
           WhatsApp

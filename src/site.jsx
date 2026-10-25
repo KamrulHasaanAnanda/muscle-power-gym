@@ -1,10 +1,23 @@
 import { useEffect, useState } from 'react'
 
-export const PHONE = '01732-126333'
-export const PHONE_TEL = '+8801732126333'
-export const PHONE_2 = '01767-940141'
-export const PHONE_2_TEL = '+8801767940141'
-export const WHATSAPP = 'https://wa.me/8801732126333'
+export const PHONE = '01767-940141'
+export const PHONE_TEL = '+8801767940141'
+export const PHONE_2 = '01732-126333'
+export const PHONE_2_TEL = '+8801732126333'
+export const WHATSAPP = 'https://wa.me/8801767940141'
+export const GYM_MAIL = 'Syedmasum1981@gmail.com'
+export const GYM_MAILTO = `mailto:${GYM_MAIL}`
+
+export function copyWhatsAppNumber(number = PHONE) {
+  const text = String(number || '').trim()
+  if (!text || !navigator.clipboard?.writeText) return
+  navigator.clipboard.writeText(text).catch(() => {})
+}
+
+export function copyGymMail() {
+  if (!navigator.clipboard?.writeText) return
+  navigator.clipboard.writeText(GYM_MAIL).catch(() => {})
+}
 export const FACEBOOK =
   'https://www.facebook.com/p/Muscle-Power-Gym-Chittagong-100048470155690/'
 export const MAPS =
@@ -233,6 +246,13 @@ export const ArrowIcon = () => (
 export const FacebookIcon = () => (
   <Icon size={18}>
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </Icon>
+)
+
+export const MailIcon = () => (
+  <Icon size={18}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 7l9 6 9-6" />
   </Icon>
 )
 

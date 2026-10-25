@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import {
   ArrowIcon,
+  GYM_MAIL,
+  GYM_MAILTO,
+  copyGymMail,
   PHONE,
   PHONE_2,
   PHONE_2_TEL,
@@ -70,6 +73,10 @@ export default function Rules() {
                 <a href={`tel:${PHONE_TEL}`}>{PHONE}</a>
                 <i aria-hidden="true">✦</i>
                 <a href={`tel:${PHONE_2_TEL}`}>{PHONE_2}</a>
+                <i aria-hidden="true">✦</i>
+                <a href={GYM_MAILTO} onClick={copyGymMail}>
+                  {GYM_MAIL}
+                </a>
               </p>
             </div>
             <Link className="next-link" to="/dress-code">

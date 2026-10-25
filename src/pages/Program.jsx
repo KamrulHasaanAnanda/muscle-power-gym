@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { saveUser } from '../api.js'
-import { downloadMailDraft } from '../eml.js'
 import { formatDate, loadPdfKit, makePlanPdf, planFileName } from '../pdf.js'
-import { ChatIcon, formatPhone, Icon, programs } from '../site.jsx'
+import { ChatIcon, copyWhatsAppNumber, formatPhone, GYM_MAIL, Icon, programs } from '../site.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -252,6 +251,7 @@ export default function Program({ id }) {
 
   function sharePdf() {
     if (!check('whatsapp')) return
+    copyWhatsAppNumber(member.phone)
     const file = buildPdf()
     if (!file) return
 
@@ -265,14 +265,32 @@ export default function Program({ id }) {
           if (err?.name === 'AbortError') return
           downloadPdf(file, file.name)
           openChat()
-          setStatus('PDF downloaded. Attach it in the WhatsApp chat.')
+          setStatus('Number copied. PDF downloaded. Attach it in the WhatsApp chat.')
         })
       return
     }
 
     downloadPdf(file, file.name)
     openChat()
-    setStatus('PDF saved to Downloads. On a computer, attach that file in the WhatsApp chat — the site can’t drop it in for you.')
+    setStatus('Number copied. PDF saved to Downloads — attach that file in the WhatsApp chat.')
+  }
+
+  function composeHref() {
+    const from = GYM_MAIL
+    const to = member.email.trim()
+    const subject = `Your ${plan.title.toLowerCase()} plan · Muscle Power Gym`
+    const body = `${greeting()}\n\nYour plan is attached as a PDF.\n\nMuscle Power Gym`
+    const params = new URLSearchParams({
+      view: 'cm',
+      fs: '1',
+      tf: '1',
+      to,
+      su: subject,
+      body,
+      authuser: from,
+    })
+    const compose = `https://mail.google.com/mail/?${params}`
+    return `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(from)}&continue=${encodeURIComponent(compose)}`
   }
 
   async function emailPdf() {
@@ -290,10 +308,9 @@ export default function Program({ id }) {
         source: id,
       })
     } catch {
-      // Still open the draft if the API is down
+      // Still open mail if the API is down
     }
 
-    const subject = `Your ${plan.title.toLowerCase()} plan · Muscle Power Gym`
     const body = `${greeting()}\n\nYour plan is attached as a PDF.\n\nMuscle Power Gym`
 
     try {
@@ -302,19 +319,15 @@ export default function Program({ id }) {
         setStatus('Sent.')
         return
       }
-      await downloadMailDraft({
-        to: member.email.trim(),
-        subject,
-        body,
-        file,
-      })
-      setStatus('Mail draft downloaded with the PDF attached. Open that .eml file to send.')
+      window.open(composeHref(), '_blank', 'noopener')
+      downloadPdf(file, file.name)
+      setStatus(`Gmail is opening from ${GYM_MAIL} to ${member.email.trim()}. Attach the downloaded PDF, then send.`)
     } catch (err) {
       if (err?.name === 'AbortError') {
         setStatus('')
         return
       }
-      setStatus('Could not build the mail draft. Try again.')
+      setStatus('Could not open Gmail. Try again.')
     } finally {
       setSending(false)
     }

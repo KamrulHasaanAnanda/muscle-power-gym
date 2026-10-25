@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   FACEBOOK,
+  GYM_MAIL,
+  GYM_MAILTO,
+  copyGymMail,
   MAPS,
   PHONE,
   PHONE_2,
@@ -159,6 +162,10 @@ export default function Layout() {
                 <a href={`tel:${PHONE_TEL}`}>{PHONE}</a>
                 <br />
                 <a href={`tel:${PHONE_2_TEL}`}>{PHONE_2}</a>
+                <br />
+                <a href={GYM_MAILTO} onClick={copyGymMail}>
+                  {GYM_MAIL}
+                </a>
                 <br />
                 <a href={FACEBOOK} target="_blank" rel="noreferrer">
                   Facebook
