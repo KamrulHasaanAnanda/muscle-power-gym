@@ -20,10 +20,14 @@ export function copyGymMail() {
 }
 export const FACEBOOK =
   'https://www.facebook.com/p/Muscle-Power-Gym-Chittagong-100048470155690/'
-export const MAPS =
-  'https://www.google.com/maps/search/?api=1&query=22.3331929,91.7887957'
-export const MAP_EMBED =
-  'https://maps.google.com/maps?q=22.3331929,91.7887957&z=16&output=embed'
+export const ADDRESS =
+  '12/A, PC Road, Halishahar, G Block, Shah Amanat Complex, Above The Khandani Restaurant (4th Floor), Chittagong.'
+export const ADDRESS_SHORT = '12/A, PC Road, Halishahar'
+export const ADDRESS_LANDMARK = 'Shah Amanat Complex, 4th floor'
+export const ADDRESS_DETAIL =
+  'G Block, Shah Amanat Complex, above The Khandani Restaurant (4th Floor), Chittagong'
+export const MAPS = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`
+export const MAP_EMBED = `https://maps.google.com/maps?q=${encodeURIComponent(ADDRESS)}&z=16&output=embed`
 
 const OPEN_HOUR = 7
 const CLOSE_HOUR = 23
@@ -74,7 +78,7 @@ export const steps = [
   },
   {
     title: 'Visit the floor',
-    text: 'Come to the top floor above Rangs eMart and see the equipment for yourself.',
+    text: 'Come to Shah Amanat Complex, 4th floor above Khandani Restaurant, and see the equipment for yourself.',
   },
   {
     title: 'Start training',

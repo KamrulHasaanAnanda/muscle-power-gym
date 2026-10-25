@@ -13,6 +13,9 @@ import {
   copyGymMail,
   Icon,
   MailIcon,
+  ADDRESS_DETAIL,
+  ADDRESS_LANDMARK,
+  ADDRESS_SHORT,
   MAPS,
   MAP_EMBED,
   PHONE,
@@ -250,8 +253,9 @@ export default function Home() {
             <span>lifestyle.</span>
           </h1>
           <p className="hero-lead">
-            Halishahar’s top-floor training gym on Port Connecting Road. Free
-            weights, machines, cardio, and dedicated ladies’ hours.
+            Halishahar’s 4th-floor training gym on PC Road, above Khandani
+            Restaurant. Free weights, machines, cardio, and dedicated ladies’
+            hours.
           </p>
           <div className="hero-actions">
             <a className="btn btn-lg" href={`tel:${PHONE_TEL}`}>
@@ -286,7 +290,7 @@ export default function Home() {
             </div>
             <div>
               <span>Find us</span>
-              <strong>Top floor, Rangs eMart</strong>
+              <strong>{ADDRESS_LANDMARK}</strong>
             </div>
           </div>
         </div>
@@ -436,8 +440,8 @@ export default function Home() {
               <div className="visit-address" id="location">
                 <PinIcon />
                 <div>
-                  <h3>Port Connecting Road, Halishahar</h3>
-                  <p>Top floor, above Rangs eMart · Chattogram</p>
+                  <h3>{ADDRESS_SHORT}</h3>
+                  <p>{ADDRESS_DETAIL}</p>
                 </div>
               </div>
 
@@ -464,8 +468,8 @@ export default function Home() {
               ) : (
                 <button className="map-cover" type="button" onClick={() => setShowMap(true)}>
                   <PinIcon />
-                  <strong>Port Connecting Road, Halishahar</strong>
-                  <span>Top floor, above Rangs eMart</span>
+                  <strong>{ADDRESS_SHORT}</strong>
+                  <span>{ADDRESS_DETAIL}</span>
                   <em>Tap to load the map</em>
                 </button>
               )}
@@ -591,7 +595,7 @@ export default function Home() {
                 <li>
                   <a href={MAPS} target="_blank" rel="noreferrer">
                     <PinIcon />
-                    Port Connecting Road, Halishahar
+                    {ADDRESS_SHORT}
                   </a>
                 </li>
                 <li>

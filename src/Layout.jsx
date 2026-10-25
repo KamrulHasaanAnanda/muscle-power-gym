@@ -5,6 +5,8 @@ import {
   GYM_MAIL,
   GYM_MAILTO,
   copyGymMail,
+  ADDRESS_DETAIL,
+  ADDRESS_SHORT,
   MAPS,
   PHONE,
   PHONE_2,
@@ -14,7 +16,7 @@ import {
 } from './site.jsx'
 
 const titles = {
-  '/': 'Muscle Power Gym · Halishahar, Chattogram',
+  '/': 'Muscle Power Gym · Halishahar, Chittagong',
   '/dress-code': 'Dress code · Muscle Power Gym',
   '/rules': 'Rules & regulations · Muscle Power Gym',
   '/weight-loss': 'Weight loss plan · Muscle Power Gym',
@@ -137,11 +139,9 @@ export default function Layout() {
               <h4>Visit</h4>
               <p>
                 <a href={MAPS} target="_blank" rel="noreferrer">
-                  Port Connecting Road
+                  {ADDRESS_SHORT}
                   <br />
-                  Top floor, above Rangs eMart
-                  <br />
-                  Halishahar, Chattogram
+                  {ADDRESS_DETAIL}
                 </a>
               </p>
             </div>
@@ -173,7 +173,7 @@ export default function Layout() {
             </div>
           </div>
           <div className="foot-bottom">
-            <span>© {new Date().getFullYear()} Muscle Power Gym, Chattogram</span>
+            <span>© {new Date().getFullYear()} Muscle Power Gym, Chittagong</span>
             <nav className="foot-links" aria-label="More">
               <Link to="/dress-code">Dress code</Link>
               <Link to="/rules">Rules</Link>

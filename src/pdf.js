@@ -1,4 +1,4 @@
-import { PHONE, PHONE_2 } from './site.jsx'
+import { ADDRESS, PHONE, PHONE_2 } from './site.jsx'
 
 // A4 in millimetres, laid out to match the gym's printed sheets
 const W = 210
@@ -8,9 +8,6 @@ const RED = [190, 22, 30]
 const NAVY = [31, 42, 94]
 const INK = [25, 22, 20]
 const GREY = [110, 104, 96]
-
-const ADDRESS =
-  '12/A, PC Road, Halishahar, G Block, Shah Amanat Complex, Above The Khandani Restaurant (4th Floor), Chittagong.'
 
 function header(doc, images) {
   // Logo in a ring, top left

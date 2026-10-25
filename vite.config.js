@@ -39,7 +39,7 @@ export default defineConfig({
         name: 'Muscle Power Gym',
         short_name: 'Muscle Power',
         description:
-          'Muscle Power Gym on Port Connecting Road, Halishahar, Chattogram. Strength, cardio, and ladies’ hours. Open 7:00 AM to 11:00 PM, closed Friday.',
+          'Muscle Power Gym at 12/A, PC Road, Halishahar, Shah Amanat Complex, 4th floor above Khandani Restaurant, Chittagong. Strength, cardio, and ladies’ hours. Open 7:00 AM to 11:00 PM, closed Friday.',
         lang: 'en',
         dir: 'ltr',
         start_url: '/',
