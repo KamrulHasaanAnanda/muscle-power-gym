@@ -7,6 +7,7 @@ import {
   copyGymMail,
   ADDRESS_DETAIL,
   ADDRESS_SHORT,
+  TAGLINE,
   MAPS,
   PHONE,
   PHONE_2,
@@ -22,6 +23,7 @@ const titles = {
   '/price-chart': 'Price chart · Muscle Power Gym',
   '/weight-loss': 'Weight loss plan · Muscle Power Gym',
   '/weight-gain': 'Weight gain plan · Muscle Power Gym',
+  '/custom': 'Custom plan · Muscle Power Gym',
 }
 
 export default function Layout() {
@@ -133,7 +135,7 @@ export default function Layout() {
               <img src="/images/logo-badge-web.png" alt="Muscle Power Gym" width="69" height="88" />
             </span>
             <p className="foot-name">Muscle Power Gym</p>
-            <p className="foot-tag">Change your lifestyle.</p>
+            <p className="foot-tag">{TAGLINE}</p>
           </div>
           <div className="foot-grid">
             <div>
@@ -181,6 +183,7 @@ export default function Layout() {
               <Link to="/price-chart">Price chart</Link>
               <Link to="/weight-loss">Weight loss</Link>
               <Link to="/weight-gain">Weight gain</Link>
+              <Link to="/custom">Custom</Link>
               <a href="#top">Back to top ↑</a>
             </nav>
           </div>

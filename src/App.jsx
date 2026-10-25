@@ -20,6 +20,7 @@ export default function App() {
           <Route path="price-chart" element={<PriceChart />} />
           <Route path="weight-loss" element={<Program key="weight-loss" id="weight-loss" />} />
           <Route path="weight-gain" element={<Program key="weight-gain" id="weight-gain" />} />
+          <Route path="custom" element={<Program key="custom" id="custom" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

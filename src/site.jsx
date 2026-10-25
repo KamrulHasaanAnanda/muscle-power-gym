@@ -26,6 +26,7 @@ export const ADDRESS_SHORT = '12/A, PC Road, Halishahar'
 export const ADDRESS_LANDMARK = 'Shah Amanat Complex, 4th floor'
 export const ADDRESS_DETAIL =
   'G Block, Shah Amanat Complex, above The Khandani Restaurant (4th Floor), Chittagong'
+export const TAGLINE = 'A complete multi instrumental gym'
 export const MAPS = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`
 export const MAP_EMBED = `https://maps.google.com/maps?q=${encodeURIComponent(ADDRESS)}&z=16&output=embed`
 
@@ -329,6 +330,7 @@ export function Status({ open, ladies }) {
 export const programs = {
   'weight-gain': {
     title: 'Weight gain',
+    short: 'Gain',
     accent: 'gain.',
     bn: 'ওজন বাড়ানোর ডায়েট ও ওয়ার্কআউট',
     lead: 'Seven meals a day and a strength-first workout to help you put on size. Your trainer sets the reps and sets for you.',
@@ -392,6 +394,7 @@ export const programs = {
   },
   'weight-loss': {
     title: 'Weight loss',
+    short: 'Loss',
     accent: 'loss.',
     bn: 'ওজন কমানোর ডায়েট ও ওয়ার্কআউট',
     lead: 'Seven light meals a day, a timed cardio circuit, and machine work to burn fat and keep muscle. Your trainer sets the reps and sets for you.',
@@ -440,6 +443,29 @@ export const programs = {
       'Rest 1 to 1½ minutes between each pair of exercises.',
       'Use a stopwatch to time each exercise.',
     ],
+    next: 'custom',
+  },
+  custom: {
+    title: 'Custom',
+    short: 'Custom',
+    accent: 'plan.',
+    bn: 'কাস্টম ডায়েট ও ওয়ার্কআউট',
+    lead: 'A blank sheet. Write the exercises, reps, sets, and meals for this member.',
+    diet: [
+      ['8:00 AM', []],
+      ['11:00 AM', []],
+      ['1:30 PM', []],
+      ['5:30 PM', []],
+      ['8:00 PM', []],
+      ['10:00 PM', []],
+      ['11:45 PM', []],
+    ],
+    workouts: [
+      { title: 'Part 1', items: [] },
+      { title: 'Part 2', items: [] },
+    ],
+    notes: [],
+    blank: true,
     next: 'weight-gain',
   },
 }

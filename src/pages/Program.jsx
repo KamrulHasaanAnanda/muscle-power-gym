@@ -93,7 +93,17 @@ export default function Program({ id }) {
   const [error, setError] = useState('')
   const [values, setValues] = useState({})
   const [fill, setFill] = useState({})
-  const [extras, setExtras] = useState({})
+  const [extras, setExtras] = useState(() =>
+    plan.blank
+      ? {
+          0: Array.from({ length: 8 }, () => ({ name: '', rep: '', set: '' })),
+          1: Array.from({ length: 8 }, () => ({ name: '', rep: '', set: '' })),
+        }
+      : {},
+  )
+  const [customDiet, setCustomDiet] = useState(() =>
+    plan.blank ? plan.diet.map(([time]) => [time, '']) : null,
+  )
   const [note, setNote] = useState('')
   const [withDiet, setWithDiet] = useState(true)
   const [status, setStatus] = useState('')
@@ -142,7 +152,39 @@ export default function Program({ id }) {
   const hasPhone = isBangladeshMobile(member.phone)
   const hasEmail = isEmail(member.email)
   const memberReady = member.name.trim() && (hasPhone || hasEmail)
-  const filled = Object.values(values).filter((v) => v.rep || v.set).length
+  const diet = plan.blank ? customDiet : plan.diet
+  const filled = plan.blank
+    ? Object.values(extras)
+        .flat()
+        .filter((row) => row.name.trim() || row.rep || row.set).length
+    : Object.values(values).filter((v) => v.rep || v.set).length
+
+  const dietForPdf = (diet || [])
+    .map(([time, foods]) => [
+      String(time || '').trim(),
+      Array.isArray(foods)
+        ? foods
+        : String(foods)
+            .split(/[·,+]/)
+            .map((item) => item.trim())
+            .filter(Boolean),
+    ])
+    .filter(([time, foods]) => time && foods.length)
+
+  const setMeal = (index, field) => (event) =>
+    setCustomDiet((rows) =>
+      rows.map((row, i) =>
+        i === index ? (field === 'time' ? [event.target.value, row[1]] : [row[0], event.target.value]) : row,
+      ),
+    )
+
+  function addMeal() {
+    setCustomDiet((rows) => [...rows, ['', '']])
+  }
+
+  function removeMeal(index) {
+    setCustomDiet((rows) => rows.filter((_, i) => i !== index))
+  }
 
   const updateMember = (field) => (event) => {
     setMember((m) => ({ ...m, [field]: event.target.value }))
@@ -167,6 +209,16 @@ export default function Program({ id }) {
       })
       return out
     })
+    if (plan.blank) {
+      setExtras((e) => ({
+        ...e,
+        [b]: (e[b] || []).map((row) => ({
+          ...row,
+          rep: row.rep || rep,
+          set: row.set || set,
+        })),
+      }))
+    }
   }
 
   function addExtra(b) {
@@ -234,12 +286,12 @@ export default function Program({ id }) {
     }
     const { JsPDF, images } = pdfKit.current
     const doc = makePlanPdf(JsPDF, images, {
-      plan,
+      plan: { ...plan, diet: dietForPdf },
       member,
       values,
       extras,
       note,
-      withDiet,
+      withDiet: withDiet && dietForPdf.length > 0,
       date: formatDate(member.date),
     })
     const filename = planFileName(member.name, id)
@@ -360,7 +412,8 @@ export default function Program({ id }) {
           <nav className="sheet-switch" aria-label="Choose a sheet">
             {Object.entries(programs).map(([key, p]) => (
               <NavLink key={key} to={`/${key}`}>
-                {p.title}
+                <span className="sheet-full">{p.title}</span>
+                <span className="sheet-short">{p.short || p.title}</span>
               </NavLink>
             ))}
           </nav>
@@ -620,7 +673,7 @@ export default function Program({ id }) {
             <header className="diet-head">
               <div>
                 <h3 className="chart-title">Diet chart</h3>
-                <p className="diet-sub">{plan.diet.length} meals through the day</p>
+                <p className="diet-sub">{diet.length} meals through the day</p>
               </div>
               <label className="diet-switch">
                 <input
@@ -633,7 +686,44 @@ export default function Program({ id }) {
               </label>
             </header>
             <ol className="meals">
-              {plan.diet.map(([time, foods], i) => {
+              {diet.map(([time, foods], i) => {
+                if (plan.blank) {
+                  return (
+                    <li key={i} className="meal meal-edit">
+                      <label className="meal-time-edit">
+                        <input
+                          value={time}
+                          onChange={setMeal(i, 'time')}
+                          placeholder="8:00 AM"
+                          maxLength={16}
+                          enterKeyHint="next"
+                          aria-label={`Meal ${i + 1} time`}
+                        />
+                      </label>
+                      <p className="meal-label">
+                        <small>Meal {i + 1}</small>
+                        {time ? mealPeriod(time) : 'Set a time'}
+                      </p>
+                      <input
+                        className="meal-foods-edit"
+                        value={foods}
+                        onChange={setMeal(i, 'foods')}
+                        placeholder="Foods, separated by commas"
+                        maxLength={120}
+                        enterKeyHint="next"
+                        aria-label={`Meal ${i + 1} foods`}
+                      />
+                      <button
+                        type="button"
+                        className="meal-remove"
+                        onClick={() => removeMeal(i)}
+                        aria-label={`Remove meal ${i + 1}`}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  )
+                }
                 const [clock, ampm] = time.split(' ')
                 return (
                   <li key={time} className="meal">
@@ -650,6 +740,11 @@ export default function Program({ id }) {
                 )
               })}
             </ol>
+            {plan.blank && (
+              <button type="button" className="add-row" onClick={addMeal}>
+                + Add meal
+              </button>
+            )}
           </article>
         </div>
       </section>

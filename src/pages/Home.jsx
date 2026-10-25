@@ -16,6 +16,7 @@ import {
   ADDRESS_DETAIL,
   ADDRESS_LANDMARK,
   ADDRESS_SHORT,
+  TAGLINE,
   MAPS,
   MAP_EMBED,
   PHONE,
@@ -247,6 +248,7 @@ export default function Home() {
             <Status open={open} ladies={ladies} />
             <span className="bn">মাসেল পাওয়ার জিম</span>
           </div>
+          <p className="kicker">{TAGLINE}</p>
           <h1 className="display">
             Change your
             <br />
@@ -550,19 +552,6 @@ export default function Home() {
                 <p>
                   Hours, equipment, lockers, monthly fees, conduct, and who may
                   come in with you.
-                </p>
-              </div>
-              <span className="guide-arrow">
-                <ArrowIcon />
-              </span>
-            </Link>
-            <Link className="guide" to="/price-chart">
-              <span className="guide-num">C</span>
-              <div>
-                <h3>Price chart</h3>
-                <p>
-                  Male and female membership fees, monthly rates, and
-                  multi-month packages.
                 </p>
               </div>
               <span className="guide-arrow">
