@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { saveUser } from '../api.js'
+import { downloadMailDraft } from '../eml.js'
 import { formatDate, loadPdfKit, makePlanPdf, planFileName } from '../pdf.js'
-import { ChatIcon, formatPhone, Icon, PHONE, programs } from '../site.jsx'
+import { ChatIcon, formatPhone, Icon, programs } from '../site.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -274,74 +275,46 @@ export default function Program({ id }) {
     setStatus('PDF saved to Downloads. On a computer, attach that file in the WhatsApp chat — the site can’t drop it in for you.')
   }
 
-  // This Mac opens mailto links in the Comet browser, which does not write email.
-  // A Gmail compose tab does open, with the member already in To.
-  function composeHref() {
-    const subject = `Your ${plan.title.toLowerCase()} plan · Muscle Power Gym`
-    const body = `${greeting()}\n\nYour plan is attached as a PDF.\n\nMuscle Power Gym\n${PHONE}`
-    const params = new URLSearchParams({
-      view: 'cm',
-      fs: '1',
-      tf: '1',
-      to: member.email.trim(),
-      su: subject,
-      body,
-    })
-    const compose = `https://mail.google.com/mail/?${params}`
-    return `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(compose)}`
-  }
-
-  function saveAfterMail(file) {
-    setTimeout(() => downloadPdf(file, file.name), 800)
-    setStatus('Gmail is opening. Save the PDF, then attach that file to the message.')
-  }
-
-  function fallbackEmail(file) {
-    if (canShareFile(file)) {
-      navigator.clipboard?.writeText(member.email.trim()).catch(() => {})
-      setStatus(`Pick Gmail or Mail. ${member.email.trim()} is copied — paste it in “To”.`)
-      navigator
-        .share({ files: [file], title: `${plan.title} plan`, text: greeting() })
-        .then(() => setStatus('Sent.'))
-        .catch((err) => {
-          if (err?.name === 'AbortError') {
-            setStatus('')
-            return
-          }
-          window.open(composeHref(), '_blank', 'noopener')
-          saveAfterMail(file)
-        })
-      return
-    }
-    window.open(composeHref(), '_blank', 'noopener')
-    saveAfterMail(file)
-  }
-
   async function emailPdf() {
     if (!check('email') || sending) return
     const file = buildPdf()
     if (!file) return
 
     setSending(true)
-    setStatus('Sending email…')
     try {
-      const result = await saveUser(
-        {
-          name: member.name,
-          phone: member.phone,
-          email: member.email,
-          message: note,
-          source: id,
-        },
-        file,
-      )
-      if (result.emailed) {
-        setStatus('Email sent.')
+      await saveUser({
+        name: member.name,
+        phone: member.phone,
+        email: member.email,
+        message: note,
+        source: id,
+      })
+    } catch {
+      // Still open the draft if the API is down
+    }
+
+    const subject = `Your ${plan.title.toLowerCase()} plan · Muscle Power Gym`
+    const body = `${greeting()}\n\nYour plan is attached as a PDF.\n\nMuscle Power Gym`
+
+    try {
+      if (canShareFile(file)) {
+        await navigator.share({ files: [file], title: `${plan.title} plan`, text: body })
+        setStatus('Sent.')
         return
       }
-      fallbackEmail(file)
-    } catch {
-      fallbackEmail(file)
+      await downloadMailDraft({
+        to: member.email.trim(),
+        subject,
+        body,
+        file,
+      })
+      setStatus('Mail draft downloaded with the PDF attached. Open that .eml file to send.')
+    } catch (err) {
+      if (err?.name === 'AbortError') {
+        setStatus('')
+        return
+      }
+      setStatus('Could not build the mail draft. Try again.')
     } finally {
       setSending(false)
     }
