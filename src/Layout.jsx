@@ -17,7 +17,6 @@ const titles = {
   '/': 'Muscle Power Gym · Halishahar, Chattogram',
   '/dress-code': 'Dress code · Muscle Power Gym',
   '/rules': 'Rules & regulations · Muscle Power Gym',
-  '/workout-chart': 'Workout chart · Muscle Power Gym',
   '/weight-loss': 'Weight loss plan · Muscle Power Gym',
   '/weight-gain': 'Weight gain plan · Muscle Power Gym',
 }
@@ -178,7 +177,6 @@ export default function Layout() {
             <nav className="foot-links" aria-label="More">
               <Link to="/dress-code">Dress code</Link>
               <Link to="/rules">Rules</Link>
-              <Link to="/workout-chart">Workout chart</Link>
               <Link to="/weight-loss">Weight loss</Link>
               <Link to="/weight-gain">Weight gain</Link>
               <a href="#top">Back to top ↑</a>

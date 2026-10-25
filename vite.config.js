@@ -71,16 +71,15 @@ export default defineConfig({
         ],
         shortcuts: [
           {
-            name: 'Workout chart',
-            short_name: 'Chart',
-            description: 'Male and female weekly workout charts',
-            url: '/workout-chart',
-            icons: [icon192],
-          },
-          {
             name: 'Rules & regulations',
             short_name: 'Rules',
             url: '/rules',
+            icons: [icon192],
+          },
+          {
+            name: 'Dress code',
+            short_name: 'Dress',
+            url: '/dress-code',
             icons: [icon192],
           },
           {

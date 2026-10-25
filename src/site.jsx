@@ -38,6 +38,12 @@ export const hours = [
   ['Friday', 'Closed'],
 ]
 
+export const trainers = [
+  { count: 2, title: 'Main trainer' },
+  { count: 4, title: 'Co-trainer (male)' },
+  { count: 4, title: 'Co-trainer (female)' },
+]
+
 export const features = [
   {
     title: 'Strength training',
@@ -64,7 +70,7 @@ export const features = [
 export const steps = [
   {
     title: 'Call or WhatsApp',
-    text: `Reach us on ${PHONE} and ask about fees, timings, or a trial day.`,
+    text: `Reach us on ${PHONE} and ask about fees or timings.`,
   },
   {
     title: 'Visit the floor',
@@ -140,14 +146,14 @@ export const ruleGroups = [
     ],
   },
   {
-    title: 'Fees & attendance',
+    title: 'Monthly Fees & Membership Policy',
     items: [
-      'Monthly fees must be paid between the 1st and the 15th of each month.',
-      'A late fee of ৳200 is charged for each month a payment is carried forward.',
-      'Membership is cancelled if fees stay unpaid for two consecutive months.',
-      'Membership is cancelled after three consecutive months away. You must register again to return.',
-      'Fees are not refunded once membership is confirmed. Review the terms before you enroll.',
-      'Members who attend only three days in a month still pay the full monthly fee.',
+      'Monthly fee payment: monthly membership fees must be paid by the 15th of each month.',
+      'Non-payment of fees: failure to pay membership fees for two consecutive months will result in cancellation of the membership.',
+      'Late payment penalty: if a monthly fee remains unpaid and is carried forward to the following month, a late fee of BDT 200 will be charged for each month of delay.',
+      'Absence from the gym: if a member fails to attend the gym for three consecutive months, their membership will be cancelled.',
+      'No refund policy: please carefully review all fees, expenses, terms, and conditions before enrolling. Once the membership is confirmed, no fees or payments will be refunded.',
+      'Minimum attendance policy: members who attend the gym only three days in a month are still required to pay the full monthly membership fee.',
     ],
   },
   {
@@ -255,50 +261,6 @@ export const MailIcon = () => (
     <path d="M3 7l9 6 9-6" />
   </Icon>
 )
-
-export const MaleIcon = () => (
-  <Icon>
-    <circle cx="12" cy="5.2" r="2.5" />
-    <path d="M5.5 10.2h13" />
-    <path d="M8 21v-2.4c0-2.3 1.8-4.1 4-4.1s4 1.8 4 4.1V21" />
-  </Icon>
-)
-
-export const FemaleIcon = () => (
-  <Icon>
-    <circle cx="12" cy="5.2" r="2.5" />
-    <path d="M12 8.1 6.8 21h10.4L12 8.1z" />
-  </Icon>
-)
-
-export const workoutCharts = [
-  {
-    id: 'male',
-    title: 'Male',
-    bn: 'পুরুষ',
-    days: [
-      ['Saturday', 'Chest', 'Bench press, incline press, chest fly'],
-      ['Sunday', 'Back', 'Lat pulldown, seated row, straight-arm pulldown'],
-      ['Monday', 'Shoulders', 'Shoulder press, lateral raise, rear fly'],
-      ['Tuesday', 'Arms', 'Barbell curl, triceps pushdown, hammer curl'],
-      ['Wednesday', 'Legs', 'Squat, leg press, leg curl'],
-      ['Thursday', 'Core & cardio', 'Plank, cable crunch, treadmill'],
-    ],
-  },
-  {
-    id: 'female',
-    title: 'Female',
-    bn: 'মহিলা',
-    days: [
-      ['Saturday', 'Legs & glutes', 'Hip thrust, squat, walking lunge'],
-      ['Sunday', 'Back & shoulders', 'Lat pulldown, seated row, shoulder press'],
-      ['Monday', 'Chest & arms', 'Chest press, fly, dumbbell curl'],
-      ['Tuesday', 'Legs & glutes', 'Romanian deadlift, leg press, hip abduction'],
-      ['Wednesday', 'Full body', 'Goblet squat, row, shoulder press'],
-      ['Thursday', 'Core & cardio', 'Dead bug, cable crunch, treadmill'],
-    ],
-  },
-]
 
 export function Mark() {
   return (

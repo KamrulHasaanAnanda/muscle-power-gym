@@ -26,11 +26,13 @@ export default function Rules() {
             Rules
           </p>
           <h1 className="display">
-            The house <span>rules.</span>
+            Gym membership
+            <br />
+            <span>rules & regulations.</span>
           </h1>
           <p className="lead">
             These rules apply to every member. They cover the timetable,
-            equipment, lockers, fees, and how we treat each other.
+            equipment, lockers, monthly fees, and how we treat each other.
           </p>
         </div>
       </section>

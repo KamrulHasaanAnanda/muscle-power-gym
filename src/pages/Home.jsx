@@ -8,12 +8,10 @@ import {
   copyWhatsAppNumber,
   FACEBOOK,
   FacebookIcon,
-  FemaleIcon,
   GYM_MAIL,
   GYM_MAILTO,
   copyGymMail,
   Icon,
-  MaleIcon,
   MailIcon,
   MAPS,
   MAP_EMBED,
@@ -29,6 +27,7 @@ import {
   formatPhone,
   hours,
   steps,
+  trainers,
   useGymStatus,
 } from '../site.jsx'
 
@@ -81,10 +80,14 @@ const gallery = [
     cap: 'Spin bikes',
   },
   {
-    src: '/images/gym-4.jpg',
-    alt: 'Benches, machines, and a row of treadmills on red and blue floor mats',
-    cap: 'Free weights & cardio',
-    size: 'gallery-wide',
+    src: '/images/members-male.jpg',
+    alt: 'Male members in matching red and black gym shirts posing together on the floor',
+    cap: 'Male members',
+  },
+  {
+    src: '/images/members-female.jpg',
+    alt: 'Female members in matching red and black gym shirts posing together on the floor',
+    cap: 'Female members',
   },
 ]
 
@@ -127,7 +130,8 @@ const photoWidths = {
   'floor-treadmill': [480, 825],
   'equip-rack': [480, 825],
   'cardio-bikes': [480, 825],
-  'gym-4': [640, 1600],
+  'members-male': [640, 1024],
+  'members-female': [640, 1024],
   'athlete-tarek': [480, 825],
   'community-group': [640, 1100],
   'ladies-event': [640, 1100],
@@ -316,6 +320,18 @@ export default function Home() {
               </li>
             ))}
           </ul>
+
+          <div className="trainers-block">
+            <p className="kicker">Trainers</p>
+            <ul className="trainers">
+              {trainers.map((t) => (
+                <li key={t.title}>
+                  <strong>{t.count}</strong>
+                  <h3>{t.title}</h3>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="gallery">
             {gallery.map((g, i) => (
@@ -528,27 +544,9 @@ export default function Home() {
               <div>
                 <h3>Rules & regulations</h3>
                 <p>
-                  Hours, equipment, lockers, fees, conduct, and who may come in
-                  with you.
+                  Hours, equipment, lockers, monthly fees, conduct, and who may
+                  come in with you.
                 </p>
-              </div>
-              <span className="guide-arrow">
-                <ArrowIcon />
-              </span>
-            </Link>
-            <Link className="guide" to="/workout-chart">
-              <span className="guide-icons" aria-hidden="true">
-                <span className="feature-icon">
-                  <MaleIcon />
-                </span>
-                <span className="feature-icon">
-                  <FemaleIcon />
-                </span>
-              </span>
-              <div>
-                <h3>Workout chart</h3>
-                <p>Separate Saturday-to-Thursday boards for male and female members.</p>
-                <p className="bn">পুরুষ ও মহিলা ওয়ার্কআউট চার্ট</p>
               </div>
               <span className="guide-arrow">
                 <ArrowIcon />
@@ -568,8 +566,8 @@ export default function Home() {
               <span>Talk to us today.</span>
             </h2>
             <p className="lead">
-              Ask about monthly fees, a trial day, or the ladies’ timetable.
-              Send a message and we’ll reply on WhatsApp.
+              Ask about monthly fees or the ladies’ timetable. Send a message
+              and we’ll reply on WhatsApp.
             </p>
           </header>
 
@@ -636,7 +634,7 @@ export default function Home() {
               </div>
               <label>
                 <span>Message</span>
-                <textarea name="note" rows="3" placeholder="Fees, trial day, ladies’ hours…" />
+                <textarea name="note" rows="3" placeholder="Fees, ladies’ hours…" />
               </label>
               <button className="btn btn-lg btn-block" type="submit">
                 <ChatIcon />
