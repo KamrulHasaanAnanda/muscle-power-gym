@@ -272,23 +272,43 @@ export default function Program({ id }) {
     setStatus('PDF saved to Downloads. On a computer, attach that file in the WhatsApp chat — the site can’t drop it in for you.')
   }
 
-  // Open the email app addressed to the member; mailto links can't carry attachments
-  function openEmail() {
+  // This Mac opens mailto links in the Comet browser, which does not write email.
+  // A Gmail compose tab does open, with the member already in To.
+  function composeHref() {
     const subject = `Your ${plan.title.toLowerCase()} plan · Muscle Power Gym`
     const body = `${greeting()}\n\nYour plan is attached as a PDF.\n\nMuscle Power Gym\n${PHONE}`
-    const link = document.createElement('a')
-    link.href = `mailto:${member.email.trim()}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    link.click()
+    const params = new URLSearchParams({
+      view: 'cm',
+      fs: '1',
+      tf: '1',
+      to: member.email.trim(),
+      su: subject,
+      body,
+    })
+    const compose = `https://mail.google.com/mail/?${params}`
+    return `https://accounts.google.com/AccountChooser?continue=${encodeURIComponent(compose)}`
   }
 
-  function emailPdf() {
-    if (!check('email')) return
+  function saveAfterMail(file) {
+    setTimeout(() => downloadPdf(file, file.name), 800)
+    setStatus('Gmail is opening. Save the PDF, then attach that file to the message.')
+  }
+
+  function emailPdf(event) {
+    if (!check('email')) {
+      event?.preventDefault()
+      return
+    }
     const file = buildPdf()
-    if (!file) return
+    if (!file) {
+      event?.preventDefault()
+      return
+    }
 
     // Phones: the share sheet attaches the PDF in Gmail / Mail, but a website can't
     // fill in the recipient, so put the address on the clipboard to paste in "To"
     if (canShareFile(file)) {
+      event?.preventDefault()
       navigator.clipboard?.writeText(member.email.trim()).catch(() => {})
       setStatus(`Pick Gmail or Mail. ${member.email.trim()} is copied — paste it in “To”.`)
       navigator
@@ -299,16 +319,13 @@ export default function Program({ id }) {
             setStatus('')
             return
           }
-          downloadPdf(file, file.name)
-          openEmail()
-          setStatus('PDF downloaded. Attach it to the email that just opened.')
+          window.open(composeHref(), '_blank', 'noopener')
+          saveAfterMail(file)
         })
       return
     }
 
-    downloadPdf(file, file.name)
-    openEmail()
-    setStatus('PDF saved to Downloads. Attach that file to the email that just opened.')
+    saveAfterMail(file)
   }
 
   const steps = [
@@ -646,15 +663,17 @@ export default function Program({ id }) {
                   : 'Fill in the sheet first')}
             </p>
           </div>
-          <button
-            type="button"
+          <a
             className="btn btn-ghost send-btn send-btn-mail"
+            href={hasEmail ? composeHref() : undefined}
+            target={hasEmail ? '_blank' : undefined}
+            rel={hasEmail ? 'noopener noreferrer' : undefined}
             onClick={emailPdf}
             aria-label="Email the PDF"
           >
             <MailIcon />
             <span className="send-btn-label">Email</span>
-          </button>
+          </a>
           <button type="button" className="btn send-btn" onClick={sharePdf} aria-label="Send the PDF on WhatsApp">
             <ChatIcon />
             <span>WhatsApp</span>

@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './Layout.jsx'
+import Pwa from './Pwa.jsx'
 import DressCode from './pages/DressCode.jsx'
 import Home from './pages/Home.jsx'
 import Program from './pages/Program.jsx'
@@ -10,6 +11,7 @@ import './App.css'
 export default function App() {
   return (
     <BrowserRouter>
+      <Pwa />
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />

@@ -42,7 +42,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
 }
 
 body {
