@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { saveUser } from '../api.js'
 import Lightbox from '../Lightbox.jsx'
 import {
   ArrowIcon,
@@ -185,7 +186,7 @@ export default function Home() {
     return () => observer.disconnect()
   }, [])
 
-  function sendWhatsApp(event) {
+  async function sendWhatsApp(event) {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
     const name = String(data.get('name') || '').trim()
@@ -198,6 +199,11 @@ export default function Home() {
     ]
       .filter(Boolean)
       .join(' ')
+    try {
+      await saveUser({ name, phone, message: note, source: 'contact' })
+    } catch {
+      // WhatsApp still opens if the API is down
+    }
     window.open(
       `${WHATSAPP}?text=${encodeURIComponent(text)}`,
       '_blank',

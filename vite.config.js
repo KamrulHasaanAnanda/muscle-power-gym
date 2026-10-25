@@ -20,6 +20,14 @@ const icon192 = { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' }
 const icon512 = { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' }
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
@@ -102,7 +110,7 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/\.\w+$/],
+        navigateFallbackDenylist: [/\.\w+$/, /^\/api(?:\/|$)/],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [
           {

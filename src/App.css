@@ -3302,6 +3302,12 @@ article.paper {
   color: var(--white);
 }
 
+.send-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none;
+}
+
 @media (max-width: 760px) {
   .paper-cols {
     grid-template-columns: 1fr;

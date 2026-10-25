@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { saveUser } from '../api.js'
 import { formatDate, loadPdfKit, makePlanPdf, planFileName } from '../pdf.js'
 import { ChatIcon, formatPhone, Icon, PHONE, programs } from '../site.jsx'
 
@@ -96,6 +97,7 @@ export default function Program({ id }) {
   const [note, setNote] = useState('')
   const [withDiet, setWithDiet] = useState(true)
   const [status, setStatus] = useState('')
+  const [sending, setSending] = useState(false)
   const pdfKit = useRef(null)
   const nameInput = useRef(null)
   const phoneInput = useRef(null)
@@ -294,21 +296,8 @@ export default function Program({ id }) {
     setStatus('Gmail is opening. Save the PDF, then attach that file to the message.')
   }
 
-  function emailPdf(event) {
-    if (!check('email')) {
-      event?.preventDefault()
-      return
-    }
-    const file = buildPdf()
-    if (!file) {
-      event?.preventDefault()
-      return
-    }
-
-    // Phones: the share sheet attaches the PDF in Gmail / Mail, but a website can't
-    // fill in the recipient, so put the address on the clipboard to paste in "To"
+  function fallbackEmail(file) {
     if (canShareFile(file)) {
-      event?.preventDefault()
       navigator.clipboard?.writeText(member.email.trim()).catch(() => {})
       setStatus(`Pick Gmail or Mail. ${member.email.trim()} is copied — paste it in “To”.`)
       navigator
@@ -324,8 +313,38 @@ export default function Program({ id }) {
         })
       return
     }
-
+    window.open(composeHref(), '_blank', 'noopener')
     saveAfterMail(file)
+  }
+
+  async function emailPdf() {
+    if (!check('email') || sending) return
+    const file = buildPdf()
+    if (!file) return
+
+    setSending(true)
+    setStatus('Sending email…')
+    try {
+      const result = await saveUser(
+        {
+          name: member.name,
+          phone: member.phone,
+          email: member.email,
+          message: note,
+          source: id,
+        },
+        file,
+      )
+      if (result.emailed) {
+        setStatus('Email sent.')
+        return
+      }
+      fallbackEmail(file)
+    } catch {
+      fallbackEmail(file)
+    } finally {
+      setSending(false)
+    }
   }
 
   const steps = [
@@ -663,17 +682,16 @@ export default function Program({ id }) {
                   : 'Fill in the sheet first')}
             </p>
           </div>
-          <a
+          <button
             className="btn btn-ghost send-btn send-btn-mail"
-            href={hasEmail ? composeHref() : undefined}
-            target={hasEmail ? '_blank' : undefined}
-            rel={hasEmail ? 'noopener noreferrer' : undefined}
+            type="button"
             onClick={emailPdf}
+            disabled={sending}
             aria-label="Email the PDF"
           >
             <MailIcon />
             <span className="send-btn-label">Email</span>
-          </a>
+          </button>
           <button type="button" className="btn send-btn" onClick={sharePdf} aria-label="Send the PDF on WhatsApp">
             <ChatIcon />
             <span>WhatsApp</span>

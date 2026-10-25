@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "api": "cd api && .venv/bin/uvicorn app:app --reload --port 8000",
+    "db": "docker compose up -d"
   },
   "dependencies": {
     "jspdf": "^2.5.2",
