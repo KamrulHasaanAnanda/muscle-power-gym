@@ -1127,7 +1127,7 @@
 
 .guides {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: clamp(1.25rem, 3vw, 2rem);
 }
 
@@ -2467,6 +2467,108 @@
     grid-template-columns: 1fr;
     gap: 0.15rem;
   }
+}
+
+/* ---------- Price chart ---------- */
+
+.price-page {
+  max-width: 44rem;
+}
+
+.price-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.3rem;
+  margin: 0 auto 2rem;
+  border-radius: 14px;
+  background: var(--ink);
+}
+
+.price-toggle button {
+  padding: 0.85rem 0.5rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #a99f90;
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.price-toggle button:hover {
+  color: var(--white);
+}
+
+.price-toggle button.is-on {
+  background: var(--white);
+  color: var(--ink);
+}
+
+.price-board {
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: -8px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.price-board-head {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.price-board-head h2 {
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.1;
+}
+
+.price-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.price-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.price-list li:first-child {
+  border-top: 0;
+}
+
+.price-list strong {
+  display: block;
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.price-list b {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  white-space: nowrap;
+}
+
+.price-save {
+  display: inline-block;
+  margin-top: 0.25rem;
+  color: var(--red);
+  font-family: var(--label);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ---------- Logo watermark behind text ---------- */

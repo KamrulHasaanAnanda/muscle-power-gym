@@ -556,6 +556,19 @@ export default function Home() {
                 <ArrowIcon />
               </span>
             </Link>
+            <Link className="guide" to="/price-chart">
+              <span className="guide-num">C</span>
+              <div>
+                <h3>Price chart</h3>
+                <p>
+                  Male and female membership fees, monthly rates, and
+                  multi-month packages.
+                </p>
+              </div>
+              <span className="guide-arrow">
+                <ArrowIcon />
+              </span>
+            </Link>
           </div>
         </div>
       </section>

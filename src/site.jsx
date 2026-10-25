@@ -179,6 +179,41 @@ export const ruleGroups = [
   },
 ]
 
+export function formatTaka(n) {
+  return `৳${Number(n).toLocaleString('en-IN')}`
+}
+
+export const priceCharts = {
+  male: {
+    id: 'male',
+    title: 'Male',
+    label: 'Male membership package',
+    rows: [
+      { name: 'Membership fee', price: 2500 },
+      { name: 'Monthly fee', price: 1000 },
+      { name: 'Membership + 1 monthly fee', price: 3500 },
+      { name: 'Membership + 3 months’ fee', price: 5000, save: 500 },
+      { name: 'Membership + 6 months’ fee', price: 7500, save: 1000 },
+      { name: 'Membership + 12 months’ fee', price: 13000, save: 1500 },
+      { name: 'Membership + 24 months’ fee', price: 24500, save: 2000 },
+    ],
+  },
+  female: {
+    id: 'female',
+    title: 'Female',
+    label: 'Female membership package',
+    rows: [
+      { name: 'Membership fee', price: 2500 },
+      { name: 'Monthly fee', price: 1500 },
+      { name: 'Membership + 1 monthly fee', price: 4000 },
+      { name: 'Membership + 3 months’ fee', price: 6500, save: 500 },
+      { name: 'Membership + 6 months’ fee', price: 10500, save: 1000 },
+      { name: 'Membership + 12 months’ fee', price: 19000, save: 1500 },
+      { name: 'Membership + 24 months’ fee', price: 36500, save: 2000 },
+    ],
+  },
+}
+
 function dhakaNow() {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Dhaka',
