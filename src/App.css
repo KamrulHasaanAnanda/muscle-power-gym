@@ -4042,3 +4042,40 @@ button {
     color: var(--cream);
   }
 }
+
+/* ---------- Staff login ---------- */
+
+.staff-login {
+  display: grid;
+  gap: 16px;
+  max-width: 360px;
+}
+
+.staff-login label {
+  display: grid;
+  gap: 6px;
+}
+
+.staff-login span {
+  font-family: var(--label);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.staff-login input {
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+}
+
+.staff-error {
+  margin: 0;
+  color: var(--red);
+  font-weight: 600;
+}

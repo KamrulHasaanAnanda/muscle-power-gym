@@ -82,18 +82,6 @@ export default defineConfig({
             url: '/dress-code',
             icons: [icon192],
           },
-          {
-            name: 'Weight loss plan',
-            short_name: 'Loss',
-            url: '/weight-loss',
-            icons: [icon192],
-          },
-          {
-            name: 'Weight gain plan',
-            short_name: 'Gain',
-            url: '/weight-gain',
-            icons: [icon192],
-          },
         ],
         screenshots: [
           {

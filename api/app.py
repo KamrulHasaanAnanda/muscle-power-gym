@@ -57,7 +57,7 @@ app.add_middleware(
         ).split(",")
         if origin.strip()
     ],
-    allow_methods=["GET", "POST"],
+    allow_methods=["POST"],
     allow_headers=["*"],
 )
 
@@ -73,13 +73,6 @@ def health():
         postgres = False
         db_error = str(exc)
     return {"ok": postgres, "postgres": postgres, "db_error": db_error}
-
-
-@app.get("/users")
-def list_users():
-    with connect() as conn:
-        rows = conn.execute("SELECT * FROM users ORDER BY id DESC").fetchall()
-    return [dict(row) for row in rows]
 
 
 @app.post("/users")

@@ -23,8 +23,11 @@ const titles = {
   '/price-chart': 'Price chart · Muscle Power Gym',
   '/weight-loss': 'Weight loss plan · Muscle Power Gym',
   '/weight-gain': 'Weight gain plan · Muscle Power Gym',
-  '/custom': 'Custom plan · Muscle Power Gym',
+  '/custom': 'Customize plan · Muscle Power Gym',
 }
+
+// Shared by link only: not linked anywhere on the site and kept out of search results
+const unlisted = ['/price-chart', '/weight-loss', '/weight-gain', '/custom']
 
 export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -41,6 +44,17 @@ export default function Layout() {
 
   useEffect(() => {
     document.title = titles[location.pathname] || titles['/']
+    let robots = document.querySelector('meta[name="robots"]')
+    if (unlisted.includes(location.pathname)) {
+      if (!robots) {
+        robots = document.createElement('meta')
+        robots.name = 'robots'
+        document.head.appendChild(robots)
+      }
+      robots.content = 'noindex'
+    } else if (robots) {
+      robots.remove()
+    }
     setMenuOpen(false)
     if (location.hash) {
       const target = document.getElementById(location.hash.slice(1))
@@ -180,10 +194,6 @@ export default function Layout() {
             <nav className="foot-links" aria-label="More">
               <Link to="/dress-code">Dress code</Link>
               <Link to="/rules">Rules</Link>
-              <Link to="/price-chart">Price chart</Link>
-              <Link to="/weight-loss">Weight loss</Link>
-              <Link to="/weight-gain">Weight gain</Link>
-              <Link to="/custom">Custom</Link>
               <a href="#top">Back to top ↑</a>
             </nav>
           </div>

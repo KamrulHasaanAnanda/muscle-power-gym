@@ -446,8 +446,8 @@ export const programs = {
     next: 'custom',
   },
   custom: {
-    title: 'Custom',
-    short: 'Custom',
+    title: 'Customize',
+    short: 'Customize',
     accent: 'plan.',
     bn: 'কাস্টম ডায়েট ও ওয়ার্কআউট',
     lead: 'A blank sheet. Write the exercises, reps, sets, and meals for this member.',
