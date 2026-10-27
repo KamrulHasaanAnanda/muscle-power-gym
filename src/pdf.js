@@ -197,7 +197,7 @@ function workoutRows(block, b, values, extras) {
   return rows
 }
 
-export function makePlanPdf(JsPDF, images, { plan, member, values, extras, note, withDiet, date }) {
+export function makePlanPdf(JsPDF, images, { plan, member, values, extras, workoutNote, dietNote, withDiet, date }) {
   const doc = new JsPDF({ unit: 'mm', format: 'a4' })
   doc.setProperties({ title: `${plan.title} plan · ${member.name}` })
 
@@ -226,7 +226,7 @@ export function makePlanPdf(JsPDF, images, { plan, member, values, extras, note,
   )
 
   const noteLines = [...plan.notes]
-  if (note.trim()) noteLines.push(note.trim())
+  if (workoutNote.trim()) noteLines.push(workoutNote.trim())
   const shorter = ends[0] <= (ends[1] ?? Infinity) ? 0 : 1
   noteBlock(doc, shorter === 0 ? 14 : 110, Math.max(ends[shorter] + 8, top + 20), 84, noteLines)
   footer(doc)
@@ -256,7 +256,7 @@ export function makePlanPdf(JsPDF, images, { plan, member, values, extras, note,
       doc.text(lines, 16, y + 8)
       y += 8 + lines.length * 6.5 + 8
     })
-    noteBlock(doc, 16, y + 2, W - 34, note.trim() ? [note.trim()] : [])
+    noteBlock(doc, 16, y + 2, W - 34, dietNote.trim() ? [dietNote.trim()] : [])
     footer(doc)
   }
 

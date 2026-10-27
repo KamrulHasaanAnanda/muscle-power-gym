@@ -104,7 +104,8 @@ export default function Program({ id }) {
   const [customDiet, setCustomDiet] = useState(() =>
     plan.blank ? plan.diet.map(([time]) => [time, '']) : null,
   )
-  const [note, setNote] = useState('')
+  const [workoutNote, setWorkoutNote] = useState('')
+  const [dietNote, setDietNote] = useState('')
   const [withDiet, setWithDiet] = useState(true)
   const [status, setStatus] = useState('')
   const [sending, setSending] = useState(false)
@@ -290,7 +291,8 @@ export default function Program({ id }) {
       member,
       values,
       extras,
-      note,
+      workoutNote,
+      dietNote,
       withDiet: withDiet && dietForPdf.length > 0,
       date: formatDate(member.date),
     })
@@ -356,7 +358,12 @@ export default function Program({ id }) {
         name: member.name,
         phone: member.phone,
         email: member.email,
-        message: note,
+        message: [
+          workoutNote.trim() && `Exercise note: ${workoutNote.trim()}`,
+          dietNote.trim() && `Diet note: ${dietNote.trim()}`,
+        ]
+          .filter(Boolean)
+          .join('\n'),
         source: id,
       })
     } catch {
@@ -662,9 +669,9 @@ export default function Program({ id }) {
               <textarea
                 rows="3"
                 maxLength={300}
-                value={note}
-                onChange={(event) => setNote(event.target.value)}
-                placeholder="Anything extra for this member (optional)"
+                value={workoutNote}
+                onChange={(event) => setWorkoutNote(event.target.value)}
+                placeholder="Exercise note for this member (optional)"
               />
             </label>
           </article>
@@ -745,6 +752,16 @@ export default function Program({ id }) {
                 + Add meal
               </button>
             )}
+            <label className="paper-note">
+              <span>Note</span>
+              <textarea
+                rows="3"
+                maxLength={300}
+                value={dietNote}
+                onChange={(event) => setDietNote(event.target.value)}
+                placeholder="Diet note for this member (optional)"
+              />
+            </label>
           </article>
         </div>
       </section>
